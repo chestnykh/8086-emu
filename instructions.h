@@ -17,15 +17,15 @@ struct instruction
 };	
 
 
-#define OPCODE(instr)		(instr.one & 0x3F) 
-#define D(instr)		((instr.one >> 6) & 0x01)
-#define W(instr)		(instr.one >> 7)
-#define MOD(instr)		(instr.two & 0x03)
-#define REG(instr)		((instr.two >> 2) & 0x07)
-#define RM(instr)		((instr.two >> 5))
-#define LOW_DISP(instr)		(instr.disp & 0xFF)
+#define OPCODE(instr)	(instr.one & 0x3F) 
+#define D(instr)	((instr.one >> 6) & 0x01)
+#define W(instr)	(instr.one >> 7)
+#define MOD(instr)	(instr.two & 0x03)
+#define REG(instr)	((instr.two >> 2) & 0x07)
+#define RM(instr)	((instr.two >> 5))
+#define LOW_DISP(instr)	(instr.disp & 0xFF)
 #define HIGH_DISP(instr)	(instr.disp >> 8)
-#define LOW_DATA(instr)		(instr.data & 0xFF)
+#define LOW_DATA(instr)	(instr.data & 0xFF)
 #define HIGH_DATA(instr)	(instr.data >> 8)
 
 
