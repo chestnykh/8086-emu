@@ -24,7 +24,7 @@ $(TARGET): $(OBJECTS)
 
 main.o:	main.cpp $(INCLUDEDIR)/instructions.h
 parser.o: parser.cpp $(INCLUDEDIR)/instructions.h
-dump.o: dump.cpp $(INCLUDEDIR)/dump.h
+dump.o: dump.cpp $(INCLUDEDIR)/instructions.h
 
 
 clean:
