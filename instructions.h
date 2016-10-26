@@ -1,9 +1,7 @@
-#ifndef INSTRUCTIONS_H
-#define INSTRUCTIONS_H
+#pragma once
 
 #include <cstdint>
 #include "cpu.h"
-#include <typeinfo>
 
 /*
  This file contains routines which
@@ -18,6 +16,25 @@ typedef struct instruction
 	uint16_t	data;	/*5th and 6th bytes of the instruction - optional immediate constant*/
 	uint8_t		size:3;	/*real size of instruction from 1 to 6*/
 } instr_t;	
+
+/*
+ Enumeration of instruction
+ fields sizes
+ */
+
+enum instructionFieldsSizes{
+	OPCODE_SIZE = 6,
+	D_SIZE = 1,
+	W_SIZE = 1,
+	MOD_SIZE = 2,
+	REG_SIZE = 3,
+	RM_SIZE = 3,
+	LOW_DISP_SIZE = 8,
+	HIGH_DISP_SIZE = 8,
+	LOW_DATA_SIZE = 8,
+	HIGH_DATA_SIZE = 8
+};
+
 
 
 uint8_t OPCODE(struct instruction instr);
@@ -73,10 +90,9 @@ public:
 	void dumpInstr();
 
 	friend void dumpHex(struct instruction *instr);
-	friend void dumpBin();
+	friend void dumpBin(struct instruction *instr);
 	friend void dumpDec();
 };
 
 
 
-#endif /*INSTRUCTIONS_H*/
