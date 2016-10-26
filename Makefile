@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -pipe -O2 -march=native -fstrict-aliasing
+CXXFLAGS = -pipe -O2 -march=native -fstrict-aliasing -std=c++14 -Wall -Wextra -Wattributes
 
 TARGET=8086-emu
 
@@ -13,7 +13,6 @@ run: $(TARGET)
 	./$<
 
 $(TARGET): $(OBJECTS)
-	echo $^;
 	$(CXX) $^ -o $@;
 
 
