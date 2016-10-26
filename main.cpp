@@ -19,12 +19,8 @@ int main(int argc, char *argv[])
 		.size = 6
 	};
 	InstructionParser A(&i);
-	//if(typeid (&i) == typeid(struct instruction *)) cout<<"!!!\n";
-	//decltype(&i) j;
-	//j -> one = 45;
-	//A.dumpInstr();
-	//cout<<std::showbase<<std::setiosflags(std::ios::internal)<<std::setfill('0')<<std::setw(2)<<std::internal<<std::hex<<12<<'\n';
-	
+	A.dumpInstr();
+	/*
 	cout<<(int)OPCODE(i)<<'\n';
 	cout<<(int)D(i)<<'\n';
 	cout<<(int)W(i)<<'\n';
@@ -35,8 +31,6 @@ int main(int argc, char *argv[])
 	cout<<(int)HIGH_DISP(i)<<'\n';
 	cout<<(int)LOW_DATA(i)<<'\n';
 	cout<<(int)HIGH_DATA(i)<<'\n';
-	
-	
-
+	*/
 	return 0;
 }
