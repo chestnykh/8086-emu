@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#pragma once
+
 
 #include <cstdint>
 #include "instructions.h"
@@ -40,4 +40,3 @@ public:
 };
 */
 
-#endif /*CPU_H*/
