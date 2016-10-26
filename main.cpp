@@ -5,6 +5,8 @@
 
 using std::cout;
 
+
+
 int main(int argc, char *argv[])
 {
 	
@@ -17,20 +19,23 @@ int main(int argc, char *argv[])
 		.size = 6
 	};
 	InstructionParser A(&i);
-	A.dumpInstr();
+	//if(typeid (&i) == typeid(struct instruction *)) cout<<"!!!\n";
+	//decltype(&i) j;
+	//j -> one = 45;
+	//A.dumpInstr();
 	//cout<<std::showbase<<std::setiosflags(std::ios::internal)<<std::setfill('0')<<std::setw(2)<<std::internal<<std::hex<<12<<'\n';
-	/*
-	cout<<OPCODE(i)<<'\n';
-	cout<<D(i)<<'\n';
-	cout<<W(i)<<'\n';
-	cout<<MOD(i)<<'\n';
-	cout<<REG(i)<<'\n';
-	cout<<RM(i)<<'\n';
-	cout<<LOW_DISP(i)<<'\n';
-	cout<<HIGH_DISP(i)<<'\n';
-	cout<<LOW_DATA(i)<<'\n';
-	cout<<HIGH_DATA(i)<<'\n';
-	*/
+	
+	cout<<(int)OPCODE(i)<<'\n';
+	cout<<(int)D(i)<<'\n';
+	cout<<(int)W(i)<<'\n';
+	cout<<(int)MOD(i)<<'\n';
+	cout<<(int)REG(i)<<'\n';
+	cout<<(int)RM(i)<<'\n';
+	cout<<(int)LOW_DISP(i)<<'\n';
+	cout<<(int)HIGH_DISP(i)<<'\n';
+	cout<<(int)LOW_DATA(i)<<'\n';
+	cout<<(int)HIGH_DATA(i)<<'\n';
+	
 	
 
 	return 0;
