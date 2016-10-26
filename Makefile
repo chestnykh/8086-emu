@@ -1,7 +1,9 @@
 CXX = g++
-CXXFLAGS = -pipe -O2 -march=native -fstrict-aliasing -std=c++11 -Wall -Wextra
+CXXFLAGS = -pipe -O2 -march=native -I include/ -fstrict-aliasing -std=c++11 -Wall -Wextra
 
 TARGET=8086-emu
+
+INCLUDEDIR=include
 
 OBJECTS = main.o \
 	  parser.o \
@@ -20,9 +22,9 @@ $(TARGET): $(OBJECTS)
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c $<
 
-main.o:	main.cpp instructions.h
-parser.o: parser.cpp instructions.h
-dump.o: dump.cpp dump.h
+main.o:	main.cpp $(INCLUDEDIR)/instructions.h
+parser.o: parser.cpp $(INCLUDEDIR)/instructions.h
+dump.o: dump.cpp $(INCLUDEDIR)/dump.h
 
 
 clean:
