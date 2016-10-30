@@ -1,7 +1,10 @@
 #include <instructions.h>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
-
+#include <cpu.h>
+#include <memory.h>
+#include <typeinfo>
 
 using std::cout;
 
@@ -9,17 +12,24 @@ using std::cout;
 
 int main(int argc, char *argv[])
 {
-	
 	struct instruction i = 
 	{
-		.one = 127,
-		.two = 224,
+		.one = 2,
+		.two = 7,
 		.disp = 65535-255,
 		.data = 65535-255, 
 		.size = 6
 	};
-	InstructionParser A(&i);
-	A.dumpInstr();
+	struct cpuregs r = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	std::ifstream inp(argv[1], std::ios::binary);
+	inp.seekg(0, inp.end);
+	int len = inp.tellg();
+	inp.seekg(0, inp.beg);
+	inp.read((char*)memory, len);
+
+	Cpu A(r);
+	A.decodeInstr(memory);
+
 	/*
 	cout<<(int)OPCODE(i)<<'\n';
 	cout<<(int)D(i)<<'\n';

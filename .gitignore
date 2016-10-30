@@ -3,3 +3,4 @@
 8086-emu
 tests/
 trash/
+Makefile
