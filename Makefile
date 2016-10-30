@@ -10,7 +10,7 @@ OBJECTS = main.o \
 	  dump.o
 
 
-.PHONY: run
+.PHONY: run clean
 
 run: $(TARGET)
 	./$<
