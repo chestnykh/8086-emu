@@ -3,9 +3,10 @@
 
 #include <cstdint>
 #include "instructions.h"
+#include "memory.h"
 
 
-extern unsigned char memory[1<<20];
+extern address_t memory[(1<<20)/2];
 
 struct cpuregs
 {
