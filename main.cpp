@@ -10,6 +10,14 @@ using std::cout;
 
 
 
+
+address_t memory[(1<<20)/2];
+
+
+
+
+
+
 int main(int argc, char *argv[])
 {
 	struct instruction i = 
@@ -28,7 +36,8 @@ int main(int argc, char *argv[])
 	inp.read((char*)memory, len);
 
 	Cpu A(r);
-	A.decodeInstr(memory);
+	firstStepHandler_t f = A.instrDecodingFirstStep(NULL);
+	void *p = (A.*f)(NULL);
 
 	/*
 	cout<<(int)OPCODE(i)<<'\n';
