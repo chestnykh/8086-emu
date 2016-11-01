@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -pipe -O2 -march=native -I include/ -fstrict-aliasing -std=c++11 -Wall -Wextra
+CXXFLAGS = -pipe -O2 -march=native -I include/ -fstrict-aliasing -std=c++11 -Wall -Wextra -Wno-unused-parameter
 
 TARGET=8086-emu
 
