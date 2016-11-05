@@ -261,7 +261,7 @@ firstStepHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
 			return &InstructionParser::ADD_GroupHandler; 
 
 		case 0x06: /*push es*/
-		case 0x0E; /*push cs*/
+		case 0x0E: /*push cs*/
 		case 0x16: /*push ss*/
 		case 0x1E: /*push ds*/
 		case 0x50 ... 0x57: /*push general registers*/
