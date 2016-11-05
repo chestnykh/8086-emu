@@ -1,10 +1,12 @@
 #include <instructions.h>
 #include <iostream>
+#include "memory.h"
+
 
 using std::cout;
 
 
-InstructionParser::InstructionParser(unsigned char *byteStartAddr)
+InstructionParser::InstructionParser(addr_t *byteStartAddr)
 {
 	startByte = byteStartAddr;
 }
@@ -41,9 +43,9 @@ uint8_t D(struct instruction *instr)
 	return ((instr -> one) >> 1) & 0x01;
 }
 
-uint8_t D(unsigned char *byte)
+uint8_t D(addr_t *addr)
 {
-	return ((*byte) >> 1) & 0x01;
+	return ((addr -> lowByte) >> 1) & 0x01;
 }
 
 uint8_t W(struct instruction instr)
@@ -55,9 +57,9 @@ uint8_t W(struct instruction *instr)
 	return (instr -> one) & 0x01;
 }
 
-uint8_t W(unsigned char *byte)
+uint8_t W(addr_t *addr)
 {
-	return (*byte) & 0x01;
+	return (addr -> lowByte) & 0x01;
 }
 
 uint8_t MOD(struct instruction instr)
@@ -69,9 +71,9 @@ uint8_t MOD(struct instruction *instr)
 	return (instr -> two) >> 6;
 }
 
-uint8_t MOD(unsigned char *byte)
+uint8_t MOD(addr_t *addr)
 {
-	return (*byte) >> 6;
+	return (addr -> highByte) >> 6;
 }
 
 uint8_t REG(struct instruction instr)
@@ -83,9 +85,9 @@ uint8_t REG(struct instruction *instr)
 	return ((instr -> two) >> 3) & 0x07;
 }
 
-uint8_t REG(unsigned char *byte)
+uint8_t REG(addr_t *addr)
 {
-	return ((*byte) >> 3) & 0x07;
+	return ((addr -> highByte) >> 3) & 0x07;
 }
 
 
@@ -98,9 +100,9 @@ uint8_t RM(struct instruction *instr)
 	return (instr -> two) & 0x07;
 }
 
-uint8_t RM(unsigned char *byte)
+uint8_t RM(addr_t *addr)
 {
-	return (*byte) & 0x07;
+	return (addr -> highByte) & 0x07;
 }
 
 uint8_t LOW_DISP(struct instruction instr)
@@ -113,9 +115,9 @@ uint8_t LOW_DISP(struct instruction *instr)
 	return uint8_t((instr -> disp) & 0xFF);
 }
 
-uint8_t LOW_DISP(uint16_t *word)
+uint8_t LOW_DISP(addr_t *addr)
 {
-	return (uint8_t)((*word) & 0xFF);
+	return (uint8_t)(addr -> lowByte);
 }
 
 uint8_t HIGH_DISP(struct instruction instr)
@@ -128,9 +130,9 @@ uint8_t HIGH_DISP(struct instruction *instr)
 	return (uint8_t)((instr -> disp) >> 8);
 }
 
-uint8_t HIGH_DISP(uint16_t *word)
+uint8_t HIGH_DISP(addr_t *addr)
 {
-	return (uint8_t)((*word) >> 8); 
+	return (uint8_t)(addr -> highByte); 
 }
 
 uint8_t LOW_DATA(struct instruction instr)
@@ -143,9 +145,9 @@ uint8_t LOW_DATA(struct instruction *instr)
 	return (uint8_t)((instr -> data) & 0xFF);
 }
 
-uint8_t LOW_DATA(uint16_t *word)
+uint8_t LOW_DATA(addr_t *addr)
 {
-	return (uint8_t)((*word) & 0xFF);
+	return (uint8_t)(addr -> lowByte);
 }
 
 uint8_t HIGH_DATA(struct instruction instr)
@@ -158,16 +160,18 @@ uint8_t HIGH_DATA(struct instruction *instr)
 	return (uint8_t)((instr -> data) >> 8);
 }
 
-uint8_t HIGH_DATA(uint16_t *word)
+uint8_t HIGH_DATA(addr_t *addr)
 {
-	return (uint8_t)((*word) >> 8);
+	return (uint8_t)(addr -> highByte);
 }
 
 
 
 
-std::map<string, void *(InstructionParser::*)(unsigned char *)> InstructionParser::opcodeGroupHandlers = 
+std::map<addr_t, void *(InstructionParser::*)(addr_t *)> InstructionParser::opcodeGroupHandlers = 
 {
+	/*The table below will be rewritten*/
+	/*
 	{"add", &InstructionParser::ADD_GroupHandler},
 	{"push", &InstructionParser::PUSH_GroupHandler},
 	{"pop", &InstructionParser::POP_GroupHandler},
@@ -240,373 +244,406 @@ std::map<string, void *(InstructionParser::*)(unsigned char *)> InstructionParse
 	{"sti", &InstructionParser::STI_GroupHandler},
 	{"cld", &InstructionParser::CLD_GroupHandler},
 	{"std", &InstructionParser::STD_GroupHandler}
+	*/
 };
 
 
-
-firstStepHandler_t InstructionParser::instrDecodingFirstStep(unsigned char *startByte)
+/*
+ __attribute__((must_check)) ??
+ */
+firstStepHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
 {
-	return &InstructionParser::ADD_GroupHandler;
+	/*addr -> lowByte in switch-statement
+	 is the first byte of instruction
+	 */
+	switch(addr -> lowByte){
+		case 0x00 ... 0x05: /*add*/
+			return &InstructionParser::ADD_GroupHandler; 
+
+		case 0x06: /*push es*/
+		case 0x0E; /*push cs*/
+		case 0x16: /*push ss*/
+		case 0x1E: /*push ds*/
+		case 0x50 ... 0x57: /*push general registers*/
+		case 0x9C: /*pushf*/
+			return &InstructionParser::PUSH_GroupHandler;
+
+		case 0x07: /*pop es*/
+		case 0x17: /*pop ss*/
+		case 0x1F: /*pop ds*/
+		case 0x58 ... 0x5E: /*pop general register*/	
+		case 0x8F: /*pop reg16/mem16 */
+		case 0x9D: /*popf*/
+			return &InstructionParser::POP_GroupHandler;
+
+		case 0x08 ... 0x0D: /*or*/
+			return &InstructionParser::OR_GroupHandler;
+
+		case 0x10 ... 0x15: /*adc*/
+			return &InstructionParser::ADC_GroupHandler;
+
+	
+	}
+	return NULL;
 }
 
 
-void *InstructionParser::ADD_GroupHandler(unsigned char *byte)
+void *InstructionParser::ADD_GroupHandler(addr_t *byte)
 {
-	cout<<"ADD\n";
 	return NULL;	
 }
 
-void *InstructionParser::PUSH_GroupHandler(unsigned char *byte)
+void *InstructionParser::PUSH_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::POP_GroupHandler(unsigned char *byte)
+void *InstructionParser::POP_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::OR_GroupHandler(unsigned char *byte)
+void *InstructionParser::OR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::ADC_GroupHandler(unsigned char *byte)
+void *InstructionParser::ADC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SBB_GroupHandler(unsigned char *byte)
+void *InstructionParser::SBB_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::AND_GroupHandler(unsigned char *byte)
+void *InstructionParser::AND_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::DAA_GroupHandler(unsigned char *byte)
+void *InstructionParser::DAA_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SUB_GroupHandler(unsigned char *byte)
+void *InstructionParser::SUB_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::DAS_GroupHandler(unsigned char *byte)
+void *InstructionParser::DAS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::XOR_GroupHandler(unsigned char *byte)
+void *InstructionParser::XOR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::AAA_GroupHandler(unsigned char *byte)
+void *InstructionParser::AAA_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CMP_GroupHandler(unsigned char *byte)
+void *InstructionParser::CMP_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::AAS_GroupHandler(unsigned char *byte)
+void *InstructionParser::AAS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::INC_GroupHandler(unsigned char *byte)
+void *InstructionParser::INC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::DEC_GroupHandler(unsigned char *byte)
+void *InstructionParser::DEC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::JMP_GroupHandler(unsigned char *byte)
+void *InstructionParser::JMP_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::TEST_GroupHandler(unsigned char *byte)
+void *InstructionParser::TEST_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::XCHG_GroupHandler(unsigned char *byte)
+void *InstructionParser::XCHG_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::MOV_GroupHandler(unsigned char *byte)
+void *InstructionParser::MOV_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LEA_GroupHandler(unsigned char *byte)
+void *InstructionParser::LEA_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::NOP_GroupHandler(unsigned char *byte)
+void *InstructionParser::NOP_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CBW_GroupHandler(unsigned char *byte)
+void *InstructionParser::CBW_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CWD_GroupHandler(unsigned char *byte)
+void *InstructionParser::CWD_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CALL_GroupHandler(unsigned char *byte)
+void *InstructionParser::CALL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::WAIT_GroupHandler(unsigned char *byte)
+void *InstructionParser::WAIT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SAHF_GroupHandler(unsigned char *byte)
+void *InstructionParser::SAHF_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LAHF_GroupHandler(unsigned char *byte)
+void *InstructionParser::LAHF_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::MOVS_GroupHandler(unsigned char *byte)
+void *InstructionParser::MOVS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CMPS_GroupHandler(unsigned char *byte)
+void *InstructionParser::CMPS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::STOS_GroupHandler(unsigned char *byte)
+void *InstructionParser::STOS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LODS_GroupHandler(unsigned char *byte)
+void *InstructionParser::LODS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SCAS_GroupHandler(unsigned char *byte)
+void *InstructionParser::SCAS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::RET_GroupHandler(unsigned char *byte)
+void *InstructionParser::RET_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LES_GroupHandler(unsigned char *byte)
+void *InstructionParser::LES_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LDS_GroupHandler(unsigned char *byte)
+void *InstructionParser::LDS_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::INT_GroupHandler(unsigned char *byte)
+void *InstructionParser::INT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::INTO_GroupHandler(unsigned char *byte)
+void *InstructionParser::INTO_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::IRET_GroupHandler(unsigned char *byte)
+void *InstructionParser::IRET_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::ROL_GroupHandler(unsigned char *byte)
+void *InstructionParser::ROL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::ROR_GroupHandler(unsigned char *byte)
+void *InstructionParser::ROR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::RCL_GroupHandler(unsigned char *byte)
+void *InstructionParser::RCL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::RCR_GroupHandler(unsigned char *byte)
+void *InstructionParser::RCR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SAL_SHL_GroupHandler(unsigned char *byte)
+void *InstructionParser::SAL_SHL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SHR_GroupHandler(unsigned char *byte)
+void *InstructionParser::SHR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::SAR_GroupHandler(unsigned char *byte)
+void *InstructionParser::SAR_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::AAM_GroupHandler(unsigned char *byte)
+void *InstructionParser::AAM_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::XLAT_GroupHandler(unsigned char *byte)
+void *InstructionParser::XLAT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::ESC_GroupHandler(unsigned char *byte)
+void *InstructionParser::ESC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LOOPNE_LOOPNZ_GroupHandler(unsigned char *byte)
+void *InstructionParser::LOOPNE_LOOPNZ_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LOOPE_LOOPZ_GroupHandler(unsigned char *byte)
+void *InstructionParser::LOOPE_LOOPZ_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LOOP_GroupHandler(unsigned char *byte)
+void *InstructionParser::LOOP_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::JCXZ_GroupHandler(unsigned char *byte)
+void *InstructionParser::JCXZ_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::IN_GroupHandler(unsigned char *byte)
+void *InstructionParser::IN_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::OUT_GroupHandler(unsigned char *byte)
+void *InstructionParser::OUT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::LOCK_GroupHandler(unsigned char *byte)
+void *InstructionParser::LOCK_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::REPNE_REPNZ_GroupHandler(unsigned char *byte)
+void *InstructionParser::REPNE_REPNZ_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::REP_REPE_REPZ_GroupHandler(unsigned char *byte)
+void *InstructionParser::REP_REPE_REPZ_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::HLT_GroupHandler(unsigned char *byte)
+void *InstructionParser::HLT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CMC_GroupHandler(unsigned char *byte)
+void *InstructionParser::CMC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::NOT_GroupHandler(unsigned char *byte)
+void *InstructionParser::NOT_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::NEG_GroupHandler(unsigned char *byte)
+void *InstructionParser::NEG_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::MUL_GroupHandler(unsigned char *byte)
+void *InstructionParser::MUL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::IMUL_GroupHandler(unsigned char *byte)
+void *InstructionParser::IMUL_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::DIV_GroupHandler(unsigned char *byte)
+void *InstructionParser::DIV_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::IDIV_GroupHandler(unsigned char *byte)
+void *InstructionParser::IDIV_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CLC_GroupHandler(unsigned char *byte)
+void *InstructionParser::CLC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::STC_GroupHandler(unsigned char *byte)
+void *InstructionParser::STC_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CLI_GroupHandler(unsigned char *byte)
+void *InstructionParser::CLI_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::STI_GroupHandler(unsigned char *byte)
+void *InstructionParser::STI_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::CLD_GroupHandler(unsigned char *byte)
+void *InstructionParser::CLD_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }
 
-void *InstructionParser::STD_GroupHandler(unsigned char *byte)
+void *InstructionParser::STD_GroupHandler(addr_t *byte)
 {
 	return NULL;
 }

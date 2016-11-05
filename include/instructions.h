@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include "memory.h"
 
 using std::string;
 
@@ -72,15 +73,15 @@ uint8_t HIGH_DATA(struct instruction instr);
 uint8_t HIGH_DATA(struct instruction *instr);
 
 
-uint8_t D(unsigned char *byte);
-uint8_t W(unsigned char *byte);
-uint8_t MOD(unsigned char *byte);
-uint8_t REG(unsigned char *byte);
-uint8_t RM(unsigned char *byte);
-uint8_t LOW_DISP(uint16_t *word);
-uint8_t HIGH_DISP(uint16_t *word);
-uint8_t LOW_DATA(uint16_t *word);
-uint8_t HIGH_DATA(uint16_t *word);
+uint8_t D(addr_t *addr);
+uint8_t W(addr_t *addr);
+uint8_t MOD(addr_t *addr);
+uint8_t REG(addr_t *addr);
+uint8_t RM(addr_t *addr);
+uint8_t LOW_DISP(addr_t *addr);
+uint8_t HIGH_DISP(addr_t *addr);
+uint8_t LOW_DATA(addr_t *addr);
+uint8_t HIGH_DATA(addr_t *addr);
 
 
 
@@ -91,7 +92,7 @@ uint8_t HIGH_DATA(uint16_t *word);
 
 
 class InstructionParser;
-typedef void *(InstructionParser::*firstStepHandler_t)(unsigned char *);
+typedef void *(InstructionParser::*firstStepHandler_t)(addr_t *);
 
 
 
@@ -101,83 +102,83 @@ class InstructionParser
 {
 
 protected:
-	unsigned char *startByte;
+	addr_t *startByte;
 
 
 	struct instruction current;
-	static std::map <string, void *(InstructionParser::*)(unsigned char *)> opcodeGroupHandlers;
-	void *ADD_GroupHandler(unsigned char *byte);
-	void *PUSH_GroupHandler(unsigned char *byte);
-	void *POP_GroupHandler(unsigned char *byte);
-	void *OR_GroupHandler(unsigned char *byte);
-	void *ADC_GroupHandler(unsigned char *byte);
-	void *SBB_GroupHandler(unsigned char *byte);
-	void *AND_GroupHandler(unsigned char *byte);
-	void *DAA_GroupHandler(unsigned char *byte);
-	void *SUB_GroupHandler(unsigned char *byte);
-	void *DAS_GroupHandler(unsigned char *byte);
-	void *XOR_GroupHandler(unsigned char *byte);
-	void *AAA_GroupHandler(unsigned char *byte);
-	void *CMP_GroupHandler(unsigned char *byte);
-	void *AAS_GroupHandler(unsigned char *byte);
-	void *INC_GroupHandler(unsigned char *byte);
-	void *DEC_GroupHandler(unsigned char *byte);
-	void *JMP_GroupHandler(unsigned char *byte); /*all jumps except jcxz*/
-	void *TEST_GroupHandler(unsigned char *byte);
-	void *XCHG_GroupHandler(unsigned char *byte);
-	void *MOV_GroupHandler(unsigned char *byte);
-	void *LEA_GroupHandler(unsigned char *byte);
-	void *NOP_GroupHandler(unsigned char *byte);
-	void *CBW_GroupHandler(unsigned char *byte);
-	void *CWD_GroupHandler(unsigned char *byte);
-	void *CALL_GroupHandler(unsigned char *byte);
-	void *WAIT_GroupHandler(unsigned char *byte);
-	void *SAHF_GroupHandler(unsigned char *byte);
-	void *LAHF_GroupHandler(unsigned char *byte);
-	void *MOVS_GroupHandler(unsigned char *byte);
-	void *CMPS_GroupHandler(unsigned char *byte);
-	void *STOS_GroupHandler(unsigned char *byte);
-	void *LODS_GroupHandler(unsigned char *byte);
-	void *SCAS_GroupHandler(unsigned char *byte);
-	void *RET_GroupHandler(unsigned char *byte);
-	void *LES_GroupHandler(unsigned char *byte);
-	void *LDS_GroupHandler(unsigned char *byte);
-	void *INT_GroupHandler(unsigned char *byte);
-	void *INTO_GroupHandler(unsigned char *byte);
-	void *IRET_GroupHandler(unsigned char *byte);
-	void *ROL_GroupHandler(unsigned char *byte);
-	void *ROR_GroupHandler(unsigned char *byte);
-	void *RCL_GroupHandler(unsigned char *byte);
-	void *RCR_GroupHandler(unsigned char *byte);
-	void *SAL_SHL_GroupHandler(unsigned char *byte);
-	void *SHR_GroupHandler(unsigned char *byte);
-	void *SAR_GroupHandler(unsigned char *byte);
-	void *AAM_GroupHandler(unsigned char *byte);
-	void *XLAT_GroupHandler(unsigned char *byte);
-	void *ESC_GroupHandler(unsigned char *byte);
-	void *LOOPNE_LOOPNZ_GroupHandler(unsigned char *byte);
-	void *LOOPE_LOOPZ_GroupHandler(unsigned char *byte);
-	void *LOOP_GroupHandler(unsigned char *byte);
-	void *JCXZ_GroupHandler(unsigned char *byte);
-	void *IN_GroupHandler(unsigned char *byte);
-	void *OUT_GroupHandler(unsigned char *byte);
-	void *LOCK_GroupHandler(unsigned char *byte); /*prefix*/
-	void *REPNE_REPNZ_GroupHandler(unsigned char *byte);
-	void *REP_REPE_REPZ_GroupHandler(unsigned char *byte);
-	void *HLT_GroupHandler(unsigned char *byte);
-	void *CMC_GroupHandler(unsigned char *byte);
-	void *NOT_GroupHandler(unsigned char *byte);
-	void *NEG_GroupHandler(unsigned char *byte);
-	void *MUL_GroupHandler(unsigned char *byte);
-	void *IMUL_GroupHandler(unsigned char *byte);
-	void *DIV_GroupHandler(unsigned char *byte);
-	void *IDIV_GroupHandler(unsigned char *byte);
-	void *CLC_GroupHandler(unsigned char *byte);
-	void *STC_GroupHandler(unsigned char *byte);
-	void *CLI_GroupHandler(unsigned char *byte);
-	void *STI_GroupHandler(unsigned char *byte);
-	void *CLD_GroupHandler(unsigned char *byte);
-	void *STD_GroupHandler(unsigned char *byte);
+	static std::map <addr_t, void *(InstructionParser::*)(addr_t *)> opcodeGroupHandlers;
+	void *ADD_GroupHandler(addr_t *byte);
+	void *PUSH_GroupHandler(addr_t *byte);
+	void *POP_GroupHandler(addr_t *byte);
+	void *OR_GroupHandler(addr_t *byte);
+	void *ADC_GroupHandler(addr_t *byte);
+	void *SBB_GroupHandler(addr_t *byte);
+	void *AND_GroupHandler(addr_t *byte);
+	void *DAA_GroupHandler(addr_t *byte);
+	void *SUB_GroupHandler(addr_t *byte);
+	void *DAS_GroupHandler(addr_t *byte);
+	void *XOR_GroupHandler(addr_t *byte);
+	void *AAA_GroupHandler(addr_t *byte);
+	void *CMP_GroupHandler(addr_t *byte);
+	void *AAS_GroupHandler(addr_t *byte);
+	void *INC_GroupHandler(addr_t *byte);
+	void *DEC_GroupHandler(addr_t *byte);
+	void *JMP_GroupHandler(addr_t *byte); /*all jumps except jcxz*/
+	void *TEST_GroupHandler(addr_t *byte);
+	void *XCHG_GroupHandler(addr_t *byte);
+	void *MOV_GroupHandler(addr_t *byte);
+	void *LEA_GroupHandler(addr_t *byte);
+	void *NOP_GroupHandler(addr_t *byte);
+	void *CBW_GroupHandler(addr_t *byte);
+	void *CWD_GroupHandler(addr_t *byte);
+	void *CALL_GroupHandler(addr_t *byte);
+	void *WAIT_GroupHandler(addr_t *byte);
+	void *SAHF_GroupHandler(addr_t *byte);
+	void *LAHF_GroupHandler(addr_t *byte);
+	void *MOVS_GroupHandler(addr_t *byte);
+	void *CMPS_GroupHandler(addr_t *byte);
+	void *STOS_GroupHandler(addr_t *byte);
+	void *LODS_GroupHandler(addr_t *byte);
+	void *SCAS_GroupHandler(addr_t *byte);
+	void *RET_GroupHandler(addr_t *byte);
+	void *LES_GroupHandler(addr_t *byte);
+	void *LDS_GroupHandler(addr_t *byte);
+	void *INT_GroupHandler(addr_t *byte);
+	void *INTO_GroupHandler(addr_t *byte);
+	void *IRET_GroupHandler(addr_t *byte);
+	void *ROL_GroupHandler(addr_t *byte);
+	void *ROR_GroupHandler(addr_t *byte);
+	void *RCL_GroupHandler(addr_t *byte);
+	void *RCR_GroupHandler(addr_t *byte);
+	void *SAL_SHL_GroupHandler(addr_t *byte);
+	void *SHR_GroupHandler(addr_t *byte);
+	void *SAR_GroupHandler(addr_t *byte);
+	void *AAM_GroupHandler(addr_t *byte);
+	void *XLAT_GroupHandler(addr_t *byte);
+	void *ESC_GroupHandler(addr_t *byte);
+	void *LOOPNE_LOOPNZ_GroupHandler(addr_t *byte);
+	void *LOOPE_LOOPZ_GroupHandler(addr_t *byte);
+	void *LOOP_GroupHandler(addr_t *byte);
+	void *JCXZ_GroupHandler(addr_t *byte);
+	void *IN_GroupHandler(addr_t *byte);
+	void *OUT_GroupHandler(addr_t *byte);
+	void *LOCK_GroupHandler(addr_t *byte); /*prefix*/
+	void *REPNE_REPNZ_GroupHandler(addr_t *byte);
+	void *REP_REPE_REPZ_GroupHandler(addr_t *byte);
+	void *HLT_GroupHandler(addr_t *byte);
+	void *CMC_GroupHandler(addr_t *byte);
+	void *NOT_GroupHandler(addr_t *byte);
+	void *NEG_GroupHandler(addr_t *byte);
+	void *MUL_GroupHandler(addr_t *byte);
+	void *IMUL_GroupHandler(addr_t *byte);
+	void *DIV_GroupHandler(addr_t *byte);
+	void *IDIV_GroupHandler(addr_t *byte);
+	void *CLC_GroupHandler(addr_t *byte);
+	void *STC_GroupHandler(addr_t *byte);
+	void *CLI_GroupHandler(addr_t *byte);
+	void *STI_GroupHandler(addr_t *byte);
+	void *CLD_GroupHandler(addr_t *byte);
+	void *STD_GroupHandler(addr_t *byte);
 
 
 	void *segOverridePrefixHandler();
@@ -185,7 +186,7 @@ protected:
 
 public:
 	/*constructor parameter should be a pointer to memory the instruction located in */
-	InstructionParser(unsigned char *byteStartAddr);
+	InstructionParser(addr_t *byteStartAddr);
 
 	/*overloaded constructor, for child classes*/
 	InstructionParser();
@@ -195,7 +196,7 @@ public:
 
 	/*address of memory array first member + (cpuregs.cs << 4 + cpuregs.ip)
 	 will be the most usable argument I think*/
-	firstStepHandler_t instrDecodingFirstStep(unsigned char *startByte);
+	firstStepHandler_t getGenericGroupHandler(addr_t *addr);
 	void decodeInstr(struct instruction instr);
 	
 
