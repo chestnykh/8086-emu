@@ -3,10 +3,10 @@
 typedef union address{
 	uint16_t word;
 	struct{
-		unsigned char lowtByte;
+		unsigned char lowByte;
 		unsigned char highByte;	
 	};
-} address_t;
+} addr_t;
 
 
 /*
