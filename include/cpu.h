@@ -6,7 +6,6 @@
 #include "memory.h"
 
 
-extern address_t memory[(1<<20)/2];
 
 struct cpuregs
 {
@@ -50,7 +49,7 @@ struct cpuregs
 	uint16_t ds;
 	uint16_t ss;
 	uint16_t es;
-	uint16_t ip;
+	uint16_t *ip; /*Instruction Pointer*/
 	uint16_t flags;
 
 };
@@ -86,8 +85,8 @@ private:
 
 public:
 	struct cpuregs regs;
-	Cpu(struct cpuregs startState) : InstructionParser(){};
-	~Cpu(){};
+	Cpu(addr_t *instrAddr);
+	~Cpu();
 };
 
 
