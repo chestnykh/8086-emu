@@ -9,11 +9,7 @@
 using std::cout;
 
 
-
-
-address_t memory[(1<<20)/2];
-
-
+addr_t memory[(1<<20)/2];
 
 
 
@@ -35,9 +31,9 @@ int main(int argc, char *argv[])
 	inp.seekg(0, inp.beg);
 	inp.read((char*)memory, len);
 
-	Cpu A(r);
-	firstStepHandler_t f = A.instrDecodingFirstStep(NULL);
-	void *p = (A.*f)(NULL);
+	//Cpu A(r);
+	//unsigned char a = 0x03;
+	//void *p = (A.*f)(NULL);
 
 	/*
 	cout<<(int)OPCODE(i)<<'\n';
