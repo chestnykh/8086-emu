@@ -7,6 +7,7 @@ INCLUDEDIR=include
 
 OBJECTS = main.o \
 	  parser.o \
+	  cpu.o \
 	  dump.o
 
 
@@ -20,11 +21,12 @@ $(TARGET): $(OBJECTS)
 
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 main.o:	main.cpp $(INCLUDEDIR)/instructions.h
 parser.o: parser.cpp $(INCLUDEDIR)/instructions.h
 dump.o: dump.cpp $(INCLUDEDIR)/instructions.h
+cpu.o: cpu.cpp $(INCLUDEDIR)/cpu.h
 
 
 clean:
