@@ -6,9 +6,9 @@
 using std::cout;
 
 
-InstructionParser::InstructionParser(addr_t *addrStartAddr)
+InstructionParser::InstructionParser(mem_t *addr)
 {
-	startByte = addrStartAddr;
+	startAddr = addr;
 }
 
 InstructionParser::InstructionParser()
@@ -43,7 +43,7 @@ uint8_t D(struct instruction *instr)
 	return ((instr -> one) >> 1) & 0x01;
 }
 
-uint8_t D(addr_t *addr)
+uint8_t D(mem_t *addr)
 {
 	return ((addr -> lowByte) >> 1) & 0x01;
 }
@@ -57,7 +57,7 @@ uint8_t W(struct instruction *instr)
 	return (instr -> one) & 0x01;
 }
 
-uint8_t W(addr_t *addr)
+uint8_t W(mem_t *addr)
 {
 	return (addr -> lowByte) & 0x01;
 }
@@ -71,7 +71,7 @@ uint8_t MOD(struct instruction *instr)
 	return (instr -> two) >> 6;
 }
 
-uint8_t MOD(addr_t *addr)
+uint8_t MOD(mem_t *addr)
 {
 	return (addr -> highByte) >> 6;
 }
@@ -85,11 +85,10 @@ uint8_t REG(struct instruction *instr)
 	return ((instr -> two) >> 3) & 0x07;
 }
 
-uint8_t REG(addr_t *addr)
+uint8_t REG(mem_t *addr)
 {
 	return ((addr -> highByte) >> 3) & 0x07;
 }
-
 
 uint8_t RM(struct instruction instr)
 {
@@ -100,7 +99,7 @@ uint8_t RM(struct instruction *instr)
 	return (instr -> two) & 0x07;
 }
 
-uint8_t RM(addr_t *addr)
+uint8_t RM(mem_t *addr)
 {
 	return (addr -> highByte) & 0x07;
 }
@@ -115,9 +114,9 @@ uint8_t LOW_DISP(struct instruction *instr)
 	return uint8_t((instr -> disp) & 0xFF);
 }
 
-uint8_t LOW_DISP(addr_t *addr)
+uint8_t LOW_DISP(mem_t *addr)
 {
-	return (uint8_t)(addr -> lowByte);
+	return addr -> lowByte;
 }
 
 uint8_t HIGH_DISP(struct instruction instr)
@@ -130,9 +129,9 @@ uint8_t HIGH_DISP(struct instruction *instr)
 	return (uint8_t)((instr -> disp) >> 8);
 }
 
-uint8_t HIGH_DISP(addr_t *addr)
+uint8_t HIGH_DISP(mem_t *addr)
 {
-	return (uint8_t)(addr -> highByte); 
+	return addr -> highByte; 
 }
 
 uint8_t LOW_DATA(struct instruction instr)
@@ -145,9 +144,9 @@ uint8_t LOW_DATA(struct instruction *instr)
 	return (uint8_t)((instr -> data) & 0xFF);
 }
 
-uint8_t LOW_DATA(addr_t *addr)
+uint8_t LOW_DATA(mem_t *addr)
 {
-	return (uint8_t)(addr -> lowByte);
+	return addr -> lowByte;
 }
 
 uint8_t HIGH_DATA(struct instruction instr)
@@ -160,15 +159,15 @@ uint8_t HIGH_DATA(struct instruction *instr)
 	return (uint8_t)((instr -> data) >> 8);
 }
 
-uint8_t HIGH_DATA(addr_t *addr)
+uint8_t HIGH_DATA(mem_t *addr)
 {
-	return (uint8_t)(addr -> highByte);
+	return addr -> highByte;
 }
 
 
 
 
-//std::map<addr_t, void *(Cpu::*)(addr_t *)> Cpu::opcodeGroupHandlers = 
+//std::map<mem_t, void *(Cpu::*)(addr_t *)> Cpu::opcodeGroupHandlers = 
 //{
 	/*The table below will be rewritten*/
 	/*
@@ -249,10 +248,10 @@ uint8_t HIGH_DATA(addr_t *addr)
 
 
 
-InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
+InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *addr)
 {
-	/*addr -> lowByte in switch-statement
-	 is the first addr of instruction
+	/*mem -> lowByte in switch-statement
+	 is the first mem of instruction
 	 */
 	switch(addr -> lowByte){
 		case 0x00 ... 0x05: /*add*/

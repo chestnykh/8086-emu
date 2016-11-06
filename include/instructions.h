@@ -9,15 +9,15 @@ using std::string;
 
 /*
  This file contains routines which
- can parse six-addr 8086-instruction
+ can parse six-mem 8086-instruction
  */
 
 typedef struct instruction
 {
-	uint8_t		one;    /*1st addr of the instruction*/
-	uint8_t		two;    /*2nd addr of the instruction*/
-	uint16_t	disp;   /*3rd and 4th addrs of the instruction - optional displacement*/ 
-	uint16_t	data;	/*5th and 6th addrs of the instruction - optional immediate constant*/
+	uint8_t		one;    /*1st mem of the instruction*/
+	uint8_t		two;    /*2nd mem of the instruction*/
+	uint16_t	disp;   /*3rd and 4th mems of the instruction - optional displacement*/ 
+	uint16_t	data;	/*5th and 6th mems of the instruction - optional immediate constant*/
 	uint8_t		size:3;	/*real size of instruction from 1 to 6*/
 } instr_t;	
 
@@ -74,40 +74,40 @@ uint8_t HIGH_DATA(struct instruction instr);
 uint8_t HIGH_DATA(struct instruction *instr);
 
 
-uint8_t D(addr_t *addr);
-uint8_t W(addr_t *addr);
-uint8_t MOD(addr_t *addr);
-uint8_t REG(addr_t *addr);
-uint8_t RM(addr_t *addr);
-uint8_t LOW_DISP(addr_t *addr);
-uint8_t HIGH_DISP(addr_t *addr);
-uint8_t LOW_DATA(addr_t *addr);
-uint8_t HIGH_DATA(addr_t *addr);
+uint8_t D(mem_t *addr);
+uint8_t W(mem_t *addr);
+uint8_t MOD(mem_t *addr);
+uint8_t REG(mem_t *addr);
+uint8_t RM(mem_t *addr);
+uint8_t LOW_DISP(mem_t *addr);
+uint8_t HIGH_DISP(mem_t *addr);
+uint8_t LOW_DATA(mem_t *addr);
+uint8_t HIGH_DATA(mem_t *addr);
 
 
 class Cpu;
-typedef void (Cpu::*InstructionGroupHandler_t)(addr_t *);
+typedef void (Cpu::*InstructionGroupHandler_t)(mem_t *);
 
 
 class InstructionParser{
 private:
 	struct instruction current;
-//	static std::map <addr_t, void *(InstructionParser::*)(addr_t *)> opcodeGroupHandlers;
+//	static std::map <mem_t, void *(InstructionParser::*)(addr_t *)> opcodeGroupHandlers;
 
 
 public:
-	addr_t *startByte;
+	mem_t *startAddr;
 	/*constructor parameter should be a pointer to memory the instruction located in */
-	InstructionParser(addr_t *addrStartAddr);
+	InstructionParser(mem_t *addr);
 
 	/*overloaded constructor, for child classes*/
 	InstructionParser();
 
 	~InstructionParser();
 	void dumpInstr();
-	InstructionGroupHandler_t getGenericGroupHandler(addr_t *addr);
+	InstructionGroupHandler_t getGenericGroupHandler(mem_t *addr);
 
-	/*address of memory array first member + (cpuregs.cs << 4 + cpuregs.ip)
+	/*memess of memory array first member + (cpuregs.cs << 4 + cpuregs.ip)
 	 will be the most usable argument I think*/
 	void decodeInstr(struct instruction instr);
 
