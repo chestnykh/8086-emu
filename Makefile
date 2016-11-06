@@ -8,6 +8,7 @@ INCLUDEDIR=include
 OBJECTS = main.o \
 	  parser.o \
 	  cpu.o \
+	  cpuexec.o \
 	  dump.o
 
 
@@ -27,6 +28,7 @@ main.o:	main.cpp $(INCLUDEDIR)/instructions.h
 parser.o: parser.cpp $(INCLUDEDIR)/instructions.h
 dump.o: dump.cpp $(INCLUDEDIR)/instructions.h
 cpu.o: cpu.cpp $(INCLUDEDIR)/cpu.h
+cpuexec.o: cpuexec.cpp $(INCLUDEDIR)/instructions.h
 
 
 clean:
