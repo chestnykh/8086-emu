@@ -30,8 +30,13 @@ int main(int argc, char *argv[])
 	int len = inp.tellg();
 	inp.seekg(0, inp.beg);
 	inp.read((char*)memory, len);
+	addr_t addr = {.word = 0xD7};
 
-	//Cpu A(r);
+
+	Cpu A(&addr);
+	InstructionGroupHandler_t h = A.Parser -> getGenericGroupHandler(&addr);
+	A.Parser -> startByte -> word = 78;
+	cout<<A.Parser -> startByte -> word<<'\n';
 	//unsigned char a = 0x03;
 	//void *p = (A.*f)(NULL);
 
