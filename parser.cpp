@@ -1,14 +1,14 @@
 #include <instructions.h>
 #include <iostream>
 #include "memory.h"
-
+#include <cpu.h>
 
 using std::cout;
 
 
-InstructionParser::InstructionParser(addr_t *byteStartAddr)
+InstructionParser::InstructionParser(addr_t *addrStartAddr)
 {
-	startByte = byteStartAddr;
+	startByte = addrStartAddr;
 }
 
 InstructionParser::InstructionParser()
@@ -168,97 +168,95 @@ uint8_t HIGH_DATA(addr_t *addr)
 
 
 
-std::map<addr_t, void *(InstructionParser::*)(addr_t *)> InstructionParser::opcodeGroupHandlers = 
-{
+//std::map<addr_t, void *(Cpu::*)(addr_t *)> Cpu::opcodeGroupHandlers = 
+//{
 	/*The table below will be rewritten*/
 	/*
-	{"add", &InstructionParser::ADD_GroupHandler},
-	{"push", &InstructionParser::PUSH_GroupHandler},
-	{"pop", &InstructionParser::POP_GroupHandler},
-	{"or", &InstructionParser::OR_GroupHandler},
-	{"adc", &InstructionParser::ADC_GroupHandler},
-	{"sbb", &InstructionParser::SBB_GroupHandler},
-	{"and", &InstructionParser::AND_GroupHandler},
-	{"daa", &InstructionParser::DAA_GroupHandler},
-	{"sub", &InstructionParser::SUB_GroupHandler},
-	{"das", &InstructionParser::DAS_GroupHandler},
-	{"xor", &InstructionParser::XOR_GroupHandler},
-	{"aaa", &InstructionParser::AAA_GroupHandler},
-	{"cmp", &InstructionParser::CMP_GroupHandler},
-	{"aas", &InstructionParser::AAS_GroupHandler},
-	{"inc", &InstructionParser::INC_GroupHandler},
-	{"dec", &InstructionParser::DEC_GroupHandler},
-	{"jmp", &InstructionParser::JMP_GroupHandler},
-	{"test", &InstructionParser::TEST_GroupHandler},
-	{"xchg", &InstructionParser::XCHG_GroupHandler},
-	{"mov", &InstructionParser::MOV_GroupHandler},
-	{"lea", &InstructionParser::LEA_GroupHandler},
-	{"nop", &InstructionParser::NOP_GroupHandler},
-	{"cbw", &InstructionParser::CBW_GroupHandler},
-	{"cwd", &InstructionParser::CWD_GroupHandler},
-	{"call", &InstructionParser::CALL_GroupHandler},
-	{"wait", &InstructionParser::WAIT_GroupHandler},
-	{"sahf", &InstructionParser::SAHF_GroupHandler},
-	{"lahf", &InstructionParser::LAHF_GroupHandler},
-	{"movs", &InstructionParser::MOVS_GroupHandler},
-	{"cmps", &InstructionParser::CMPS_GroupHandler},
-	{"stos", &InstructionParser::STOS_GroupHandler},
-	{"lods", &InstructionParser::LODS_GroupHandler},
-	{"scas", &InstructionParser::SCAS_GroupHandler},
-	{"ret", &InstructionParser::RET_GroupHandler},
-	{"les", &InstructionParser::LES_GroupHandler},
-	{"lds", &InstructionParser::LDS_GroupHandler},
-	{"int", &InstructionParser::INT_GroupHandler},
-	{"into", &InstructionParser::INTO_GroupHandler},
-	{"iret", &InstructionParser::IRET_GroupHandler},
-	{"rol", &InstructionParser::ROL_GroupHandler},
-	{"ror", &InstructionParser::ROR_GroupHandler},
-	{"rcl", &InstructionParser::RCL_GroupHandler},
-	{"rcr", &InstructionParser::RCR_GroupHandler},
-	{"sal", &InstructionParser::SAL_SHL_GroupHandler},
-	{"shr", &InstructionParser::SHR_GroupHandler},
-	{"sar", &InstructionParser::SAR_GroupHandler},
-	{"aam", &InstructionParser::AAM_GroupHandler},
-	{"xlat", &InstructionParser::XLAT_GroupHandler},
-	{"esc", &InstructionParser::ESC_GroupHandler},
-	{"loopne_loopnz", &InstructionParser::LOOPNE_LOOPNZ_GroupHandler},
-	{"loope_loopz", &InstructionParser::LOOPE_LOOPZ_GroupHandler},
-	{"loop", &InstructionParser::LOOP_GroupHandler},
-	{"jcxz", &InstructionParser::JCXZ_GroupHandler},
-	{"in", &InstructionParser::IN_GroupHandler},
-	{"out", &InstructionParser::OUT_GroupHandler},
-	{"lock", &InstructionParser::LOCK_GroupHandler},
-	{"repne_repnz", &InstructionParser::REPNE_REPNZ_GroupHandler},
-	{"rep_repe_repz", &InstructionParser::REP_REPE_REPZ_GroupHandler},
-	{"hlt", &InstructionParser::HLT_GroupHandler},
-	{"cmc", &InstructionParser::CMC_GroupHandler},
-	{"not", &InstructionParser::NOT_GroupHandler},
-	{"neg", &InstructionParser::NEG_GroupHandler},
-	{"mul", &InstructionParser::MUL_GroupHandler},
-	{"imul", &InstructionParser::IMUL_GroupHandler},
-	{"div", &InstructionParser::DIV_GroupHandler},
-	{"idiv", &InstructionParser::IDIV_GroupHandler},
-	{"clc", &InstructionParser::CLC_GroupHandler},
-	{"stc", &InstructionParser::STC_GroupHandler},
-	{"cli", &InstructionParser::CLI_GroupHandler},
-	{"sti", &InstructionParser::STI_GroupHandler},
-	{"cld", &InstructionParser::CLD_GroupHandler},
-	{"std", &InstructionParser::STD_GroupHandler}
+	{"add", &Cpu::ADD_GroupHandler},
+	{"push", &Cpu::PUSH_GroupHandler},
+	{"pop", &Cpu::POP_GroupHandler},
+	{"or", &Cpu::OR_GroupHandler},
+	{"adc", &Cpu::ADC_GroupHandler},
+	{"sbb", &Cpu::SBB_GroupHandler},
+	{"and", &Cpu::AND_GroupHandler},
+	{"daa", &Cpu::DAA_GroupHandler},
+	{"sub", &Cpu::SUB_GroupHandler},
+	{"das", &Cpu::DAS_GroupHandler},
+	{"xor", &Cpu::XOR_GroupHandler},
+	{"aaa", &Cpu::AAA_GroupHandler},
+	{"cmp", &Cpu::CMP_GroupHandler},
+	{"aas", &Cpu::AAS_GroupHandler},
+	{"inc", &Cpu::INC_GroupHandler},
+	{"dec", &Cpu::DEC_GroupHandler},
+	{"jmp", &Cpu::JMP_GroupHandler},
+	{"test", &Cpu::TEST_GroupHandler},
+	{"xchg", &Cpu::XCHG_GroupHandler},
+	{"mov", &Cpu::MOV_GroupHandler},
+	{"lea", &Cpu::LEA_GroupHandler},
+	{"nop", &Cpu::NOP_GroupHandler},
+	{"cbw", &Cpu::CBW_GroupHandler},
+	{"cwd", &Cpu::CWD_GroupHandler},
+	{"call", &Cpu::CALL_GroupHandler},
+	{"wait", &Cpu::WAIT_GroupHandler},
+	{"sahf", &Cpu::SAHF_GroupHandler},
+	{"lahf", &Cpu::LAHF_GroupHandler},
+	{"movs", &Cpu::MOVS_GroupHandler},
+	{"cmps", &Cpu::CMPS_GroupHandler},
+	{"stos", &Cpu::STOS_GroupHandler},
+	{"lods", &Cpu::LODS_GroupHandler},
+	{"scas", &Cpu::SCAS_GroupHandler},
+	{"ret", &Cpu::RET_GroupHandler},
+	{"les", &Cpu::LES_GroupHandler},
+	{"lds", &Cpu::LDS_GroupHandler},
+	{"int", &Cpu::INT_GroupHandler},
+	{"into", &Cpu::INTO_GroupHandler},
+	{"iret", &Cpu::IRET_GroupHandler},
+	{"rol", &Cpu::ROL_GroupHandler},
+	{"ror", &Cpu::ROR_GroupHandler},
+	{"rcl", &Cpu::RCL_GroupHandler},
+	{"rcr", &Cpu::RCR_GroupHandler},
+	{"sal", &Cpu::SAL_SHL_GroupHandler},
+	{"shr", &Cpu::SHR_GroupHandler},
+	{"sar", &Cpu::SAR_GroupHandler},
+	{"aam", &Cpu::AAM_GroupHandler},
+	{"xlat", &Cpu::XLAT_GroupHandler},
+	{"esc", &Cpu::ESC_GroupHandler},
+	{"loopne_loopnz", &Cpu::LOOPNE_LOOPNZ_GroupHandler},
+	{"loope_loopz", &Cpu::LOOPE_LOOPZ_GroupHandler},
+	{"loop", &Cpu::LOOP_GroupHandler},
+	{"jcxz", &Cpu::JCXZ_GroupHandler},
+	{"in", &Cpu::IN_GroupHandler},
+	{"out", &Cpu::OUT_GroupHandler},
+	{"lock", &Cpu::LOCK_GroupHandler},
+	{"repne_repnz", &Cpu::REPNE_REPNZ_GroupHandler},
+	{"rep_repe_repz", &Cpu::REP_REPE_REPZ_GroupHandler},
+	{"hlt", &Cpu::HLT_GroupHandler},
+	{"cmc", &Cpu::CMC_GroupHandler},
+	{"not", &Cpu::NOT_GroupHandler},
+	{"neg", &Cpu::NEG_GroupHandler},
+	{"mul", &Cpu::MUL_GroupHandler},
+	{"imul", &Cpu::IMUL_GroupHandler},
+	{"div", &Cpu::DIV_GroupHandler},
+	{"idiv", &Cpu::IDIV_GroupHandler},
+	{"clc", &Cpu::CLC_GroupHandler},
+	{"stc", &Cpu::STC_GroupHandler},
+	{"cli", &Cpu::CLI_GroupHandler},
+	{"sti", &Cpu::STI_GroupHandler},
+	{"cld", &Cpu::CLD_GroupHandler},
+	{"std", &Cpu::STD_GroupHandler}
 	*/
-};
+//};
 
 
-/*
- __attribute__((must_check)) ??
- */
-firstStepHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
+
+InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
 {
 	/*addr -> lowByte in switch-statement
-	 is the first byte of instruction
+	 is the first addr of instruction
 	 */
 	switch(addr -> lowByte){
 		case 0x00 ... 0x05: /*add*/
-			return &InstructionParser::ADD_GroupHandler; 
+			return &Cpu::ADD_GroupHandler; 
 
 		case 0x06: /*push es*/
 		case 0x0E: /*push cs*/
@@ -266,7 +264,7 @@ firstStepHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
 		case 0x1E: /*push ds*/
 		case 0x50 ... 0x57: /*push general registers*/
 		case 0x9C: /*pushf*/
-			return &InstructionParser::PUSH_GroupHandler;
+			return &Cpu::PUSH_GroupHandler;
 
 		case 0x07: /*pop es*/
 		case 0x17: /*pop ss*/
@@ -274,377 +272,233 @@ firstStepHandler_t InstructionParser::getGenericGroupHandler(addr_t *addr)
 		case 0x58 ... 0x5E: /*pop general register*/	
 		case 0x8F: /*pop reg16/mem16 */
 		case 0x9D: /*popf*/
-			return &InstructionParser::POP_GroupHandler;
+			return &Cpu::POP_GroupHandler;
 
 		case 0x08 ... 0x0D: /*or*/
-			return &InstructionParser::OR_GroupHandler;
+			return &Cpu::OR_GroupHandler;
 
 		case 0x10 ... 0x15: /*adc*/
-			return &InstructionParser::ADC_GroupHandler;
+			return &Cpu::ADC_GroupHandler;
 
-	
+		case 0x18 ... 0x1D:
+			return &Cpu::SBB_GroupHandler;
+
+		case 0x20 ... 0x25:
+			return &Cpu::AND_GroupHandler;
+
+		case 0x26:
+		case 0x2E:
+		case 0x36:
+		case 0x3E:
+			return &Cpu::segOverridePrefixHandler;
+
+		case 0x27:
+			return &Cpu::DAA_GroupHandler;	
+
+		case 0x28 ... 0x2D:
+			return &Cpu::SUB_GroupHandler;
+
+		case 0x2F:
+			return &Cpu::DAS_GroupHandler;
+
+		case 0x30 ... 0x35:
+			return &Cpu::XOR_GroupHandler;
+
+		case 0x37:
+			return &Cpu::AAA_GroupHandler;
+
+		case 0x38 ... 0x3D:
+			return &Cpu::CMP_GroupHandler;
+
+		case 0x3F:
+			return &Cpu::AAS_GroupHandler;
+
+		case 0x40 ... 0x47:
+		       return &Cpu::INC_GroupHandler;
+
+		case 0x48 ... 0x4F:
+			return &Cpu::DEC_GroupHandler;
+
+		case 0x70 ... 0x7F:
+		case 0xE9 ... 0xEB:
+			return &Cpu::JMP_GroupHandler;
+
+		case 0x80:
+			return &Cpu::GRP_80_GroupHandler;
+
+		case 0x81:
+			return &Cpu::GRP_81_GroupHandler;
+
+		case 0x82:
+			return &Cpu::GRP_82_GroupHandler;
+
+		case 0x83:
+			return &Cpu::GRP_82_GroupHandler;
+
+		case 0x84 ... 0x85:
+		case 0xA8 ... 0xA9:
+			return &Cpu::TEST_GroupHandler;
+
+		case 0x86 ... 0x87:
+		case 0x91 ... 0x97:
+			return &Cpu::XCHG_GroupHandler;
+
+		case 0x90:
+		       return &Cpu::NOP_GroupHandler;	
+
+		case 0x88 ... 0x8C:
+		case 0x8E:
+		case 0xA0 ... 0xA3:
+		case 0xB0 ... 0xBF:
+		case 0xC6 ... 0xC7: 
+			return &Cpu::MOV_GroupHandler;	       
+
+		case 0x8D:
+			return &Cpu::LEA_GroupHandler;
+
+		case 0x98:
+			return &Cpu::CBW_GroupHandler;
+
+		case 0x99:
+			return &Cpu::CWD_GroupHandler;
+
+		case 0x9A:
+		case 0xE8:
+			return &Cpu::CALL_GroupHandler;
+
+		case 0x9B:
+			return &Cpu::WAIT_GroupHandler;
+
+		case 0x9E:
+			return &Cpu::SAHF_GroupHandler;
+
+		case 0x9F:
+			return &Cpu::LAHF_GroupHandler;
+
+		case 0xA4 ... 0xA5:
+			return &Cpu::MOVS_GroupHandler;
+
+		case 0xA6 ... 0xA7:
+			return &Cpu::CMPS_GroupHandler;
+
+		case 0xAA ... 0xAB:
+			return &Cpu::STOS_GroupHandler;	
+
+		case 0xAC ... 0xAD:
+			return &Cpu::LODS_GroupHandler;
+
+		case 0xAE ... 0xAF:
+			return &Cpu::SCAS_GroupHandler;
+
+		case 0xC2 ... 0xC3:
+		case 0xCA ... 0xCB:
+			return &Cpu::RET_GroupHandler;
+
+		case 0xC4:
+			return &Cpu::LES_GroupHandler;
+
+		case 0xC5:
+			return &Cpu::LDS_GroupHandler;
+
+		case 0xCC ... 0xCD:
+			return &Cpu::INT_GroupHandler;
+
+		case 0xCE:
+			return &Cpu::INTO_GroupHandler;
+
+		case 0xCF:
+			return &Cpu::IRET_GroupHandler;
+
+		case 0xD0:
+			return &Cpu::GRP_D0_GroupHandler;
+
+		case 0xD1:
+			return &Cpu::GRP_D1_GroupHandler;
+
+		case 0xD2:
+			return &Cpu::GRP_D2_GroupHandler;
+
+		case 0xD3:
+			return &Cpu::GRP_D3_GroupHandler;
+
+		case 0xD4:
+			return &Cpu::AAM_GroupHandler;
+
+		case 0xD5:
+			return &Cpu::AAD_GroupHandler;
+
+		case 0xD7:
+			return &Cpu::XLAT_GroupHandler;
+
+		//??
+		case 0xD8:
+			return &Cpu::ESC_GroupHandler;
+
+		case 0xE0:
+			return &Cpu::LOOPNE_LOOPNZ_GroupHandler;
+
+		case 0xE1:
+			return &Cpu::LOOPE_LOOPZ_GroupHandler;
+
+		case 0xE2:
+			return &Cpu::LOOP_GroupHandler;
+
+		case 0xE3:
+			return &Cpu::JCXZ_GroupHandler;
+
+		case 0xE4 ... 0xE5:
+		case 0xEC ... 0xED:
+			return &Cpu::IN_GroupHandler;
+
+		case 0xE6 ... 0xE7:
+		case 0xEE ... 0xEF:
+			return &Cpu::OUT_GroupHandler;
+
+		case 0xF0:
+			return &Cpu::LOCK_GroupHandler;
+
+		case 0xF2: 
+			return &Cpu::REPNE_REPNZ_GroupHandler;
+
+		case 0xF3:
+			return &Cpu::REP_REPE_REPZ_GroupHandler;
+
+		case 0xF4:
+			return &Cpu::HLT_GroupHandler;
+
+		case 0xF5:
+			return &Cpu::CMC_GroupHandler;
+
+		case 0xF6:
+			return &Cpu::GRP_F6_GroupHandler;
+
+		case 0xF7:
+			return &Cpu::GRP_F7_GroupHandler;
+
+		case 0xF8:
+			return &Cpu::CLC_GroupHandler;
+
+		case 0xF9:
+			return &Cpu::STC_GroupHandler;
+
+		case 0xFA:
+			return &Cpu::CLI_GroupHandler;
+
+		case 0xFB:
+			return &Cpu::STI_GroupHandler;
+
+		case 0xFC:
+			return &Cpu::CLD_GroupHandler;
+
+		case 0xFD:
+			return &Cpu::STD_GroupHandler;
+
+		case 0xFE:
+			return &Cpu::GRP_FE_GroupHandler;
+
+		case 0xFF:
+			return &Cpu::GRP_FF_GroupHandler;
 	}
-	return NULL;
-}
-
-
-void *InstructionParser::ADD_GroupHandler(addr_t *byte)
-{
-	return NULL;	
-}
-
-void *InstructionParser::PUSH_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::POP_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::OR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::ADC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SBB_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::AND_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::DAA_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SUB_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::DAS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::XOR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::AAA_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CMP_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::AAS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::INC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::DEC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::JMP_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::TEST_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::XCHG_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::MOV_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LEA_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::NOP_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CBW_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CWD_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CALL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::WAIT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SAHF_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LAHF_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::MOVS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CMPS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::STOS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LODS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SCAS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::RET_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LES_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LDS_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::INT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::INTO_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::IRET_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::ROL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::ROR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::RCL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::RCR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SAL_SHL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SHR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::SAR_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::AAM_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::XLAT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::ESC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LOOPNE_LOOPNZ_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LOOPE_LOOPZ_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LOOP_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::JCXZ_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::IN_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::OUT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::LOCK_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::REPNE_REPNZ_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::REP_REPE_REPZ_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::HLT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CMC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::NOT_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::NEG_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::MUL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::IMUL_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::DIV_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::IDIV_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CLC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::STC_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CLI_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::STI_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::CLD_GroupHandler(addr_t *byte)
-{
-	return NULL;
-}
-
-void *InstructionParser::STD_GroupHandler(addr_t *byte)
-{
 	return NULL;
 }
 
