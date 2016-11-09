@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Emu{
+
 typedef union memUnit{
 	uint16_t word;
 	struct{
@@ -9,10 +11,4 @@ typedef union memUnit{
 } mem_t;
 
 
-#define PA(addr) (this -> cpuregs.cs << 4 + this -> cpuregs.ip)
-
-/*
- в регистре ip содержится число - номер ячейки памяти
- (смещение от базы - от cs)
- */
-
+} //namespace Emu

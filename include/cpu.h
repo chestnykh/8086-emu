@@ -4,7 +4,10 @@
 #include <cstdint>
 #include "instructions.h"
 #include "memory.h"
+#include <map>
 
+
+namespace Emu{
 
 
 struct cpuregs
@@ -49,7 +52,7 @@ struct cpuregs
 	uint16_t ds;
 	uint16_t ss;
 	uint16_t es;
-	mem_t   *ip; /*Instruction Pointer*/
+	unsigned ip; /*Instruction Pointer*/
 	uint16_t flags;
 
 };
@@ -85,6 +88,8 @@ class Cpu{
 
 	friend class InstructionParser;
 private:
+	std::map <uint8_t, uint8_t> byteRegMap;
+	std::map <uint8_t, uint16_t> wordRegMap;
 
 	void ADD_GroupHandler(mem_t *addr);
 	void PUSH_GroupHandler(mem_t *addr);
@@ -181,8 +186,9 @@ public:
 
 	InstructionParser *Parser;
 
-	Cpu(uint16_t startCs , mem_t *startIp);
+	Cpu(uint16_t startCs , unsigned startIp);
 	~Cpu();
 };
 
+} //namespace Emu
 

@@ -1,14 +1,15 @@
 #include <instructions.h>
 #include <iostream>
-#include "memory.h"
 #include <cpu.h>
 
 using std::cout;
 
+namespace Emu{
 
 InstructionParser::InstructionParser(mem_t *addr)
 {
 	startAddr = addr;
+	current = {0,0,0,0,0,0,0,0};
 }
 
 InstructionParser::InstructionParser()
@@ -22,7 +23,7 @@ InstructionParser::~InstructionParser()
 }
 
 
-
+/*
 uint8_t OPCODE(struct instruction instr)
 {
 	return instr.one >> 2;
@@ -38,16 +39,21 @@ uint8_t D(struct instruction instr)
 {
 	return (instr.one >> 1) & 0x01;
 }
+
+
 uint8_t D(struct instruction *instr)
 {
 	return ((instr -> one) >> 1) & 0x01;
 }
+
+*/
 
 uint8_t D(mem_t *addr)
 {
 	return ((addr -> lowByte) >> 1) & 0x01;
 }
 
+/*
 uint8_t W(struct instruction instr)
 {
 	return instr.one & 0x01;
@@ -56,12 +62,14 @@ uint8_t W(struct instruction *instr)
 {
 	return (instr -> one) & 0x01;
 }
+*/
 
 uint8_t W(mem_t *addr)
 {
 	return (addr -> lowByte) & 0x01;
 }
 
+/*
 uint8_t MOD(struct instruction instr)
 {
 	return instr.two >> 6;
@@ -70,12 +78,15 @@ uint8_t MOD(struct instruction *instr)
 {
 	return (instr -> two) >> 6;
 }
+*/
 
 uint8_t MOD(mem_t *addr)
 {
 	return (addr -> highByte) >> 6;
 }
 
+
+/*
 uint8_t REG(struct instruction instr)
 {
 	return (instr.two >> 3) & 0x07;
@@ -84,12 +95,14 @@ uint8_t REG(struct instruction *instr)
 {
 	return ((instr -> two) >> 3) & 0x07;
 }
+*/
 
 uint8_t REG(mem_t *addr)
 {
 	return ((addr -> highByte) >> 3) & 0x07;
 }
 
+/*
 uint8_t RM(struct instruction instr)
 {
 	return instr.two & 0x07;
@@ -99,11 +112,13 @@ uint8_t RM(struct instruction *instr)
 	return (instr -> two) & 0x07;
 }
 
+*/
 uint8_t RM(mem_t *addr)
 {
 	return (addr -> highByte) & 0x07;
 }
 
+/*
 uint8_t LOW_DISP(struct instruction instr)
 {
 	return (uint8_t)(instr.disp & 0xFF);
@@ -113,12 +128,14 @@ uint8_t LOW_DISP(struct instruction *instr)
 {
 	return uint8_t((instr -> disp) & 0xFF);
 }
+*/
 
 uint8_t LOW_DISP(mem_t *addr)
 {
 	return addr -> lowByte;
 }
 
+/*
 uint8_t HIGH_DISP(struct instruction instr)
 {
 	return (uint8_t)(instr.disp >> 8);
@@ -128,12 +145,14 @@ uint8_t HIGH_DISP(struct instruction *instr)
 {
 	return (uint8_t)((instr -> disp) >> 8);
 }
+*/
 
 uint8_t HIGH_DISP(mem_t *addr)
 {
 	return addr -> highByte; 
 }
 
+/*
 uint8_t LOW_DATA(struct instruction instr)
 {
 	return (uint8_t)(instr.data & 0xFF);
@@ -143,12 +162,14 @@ uint8_t LOW_DATA(struct instruction *instr)
 {
 	return (uint8_t)((instr -> data) & 0xFF);
 }
+*/
 
 uint8_t LOW_DATA(mem_t *addr)
 {
 	return addr -> lowByte;
 }
 
+/*
 uint8_t HIGH_DATA(struct instruction instr)
 {
 	return (uint8_t)(instr.data >> 8);
@@ -158,6 +179,7 @@ uint8_t HIGH_DATA(struct instruction *instr)
 {
 	return (uint8_t)((instr -> data) >> 8);
 }
+*/
 
 uint8_t HIGH_DATA(mem_t *addr)
 {
@@ -165,118 +187,100 @@ uint8_t HIGH_DATA(mem_t *addr)
 }
 
 
+void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
+{
+	current.d = D(baseAddr);
+	current.w = W(baseAddr);
+	current.mod = MOD(baseAddr);
+	current.reg = REG(baseAddr);
+	current.rm = RM(baseAddr);
+	current.disp.lowDisp = LOW_DISP(baseAddr + 1);
+	current.disp.highDisp = HIGH_DISP(baseAddr + 1);
+	current.data.lowData = LOW_DATA(baseAddr + 2);
+	current.data.highData = HIGH_DATA(baseAddr + 2);
+
+	cout<<(unsigned)current.d<<'\n';
+	cout<<(unsigned)current.w<<'\n';
+	cout<<(unsigned)current.mod<<'\n';
+	cout<<(unsigned)current.reg<<'\n';
+	cout<<(unsigned)current.rm<<'\n';
+	cout<<(unsigned)current.disp.lowDisp<<'\n';
+	cout<<(unsigned)current.disp.highDisp<<'\n';
+	cout<<(unsigned)current.data.lowData<<'\n';
+	cout<<(unsigned)current.data.highData<<'\n';
+}
+
+struct instruction InstructionParser::getCurrentInstr() const
+{
+	return current;
+}
 
 
-//std::map<mem_t, void *(Cpu::*)(addr_t *)> Cpu::opcodeGroupHandlers = 
-//{
-	/*The table below will be rewritten*/
-	/*
-	{"add", &Cpu::ADD_GroupHandler},
-	{"push", &Cpu::PUSH_GroupHandler},
-	{"pop", &Cpu::POP_GroupHandler},
-	{"or", &Cpu::OR_GroupHandler},
-	{"adc", &Cpu::ADC_GroupHandler},
-	{"sbb", &Cpu::SBB_GroupHandler},
-	{"and", &Cpu::AND_GroupHandler},
-	{"daa", &Cpu::DAA_GroupHandler},
-	{"sub", &Cpu::SUB_GroupHandler},
-	{"das", &Cpu::DAS_GroupHandler},
-	{"xor", &Cpu::XOR_GroupHandler},
-	{"aaa", &Cpu::AAA_GroupHandler},
-	{"cmp", &Cpu::CMP_GroupHandler},
-	{"aas", &Cpu::AAS_GroupHandler},
-	{"inc", &Cpu::INC_GroupHandler},
-	{"dec", &Cpu::DEC_GroupHandler},
-	{"jmp", &Cpu::JMP_GroupHandler},
-	{"test", &Cpu::TEST_GroupHandler},
-	{"xchg", &Cpu::XCHG_GroupHandler},
-	{"mov", &Cpu::MOV_GroupHandler},
-	{"lea", &Cpu::LEA_GroupHandler},
-	{"nop", &Cpu::NOP_GroupHandler},
-	{"cbw", &Cpu::CBW_GroupHandler},
-	{"cwd", &Cpu::CWD_GroupHandler},
-	{"call", &Cpu::CALL_GroupHandler},
-	{"wait", &Cpu::WAIT_GroupHandler},
-	{"sahf", &Cpu::SAHF_GroupHandler},
-	{"lahf", &Cpu::LAHF_GroupHandler},
-	{"movs", &Cpu::MOVS_GroupHandler},
-	{"cmps", &Cpu::CMPS_GroupHandler},
-	{"stos", &Cpu::STOS_GroupHandler},
-	{"lods", &Cpu::LODS_GroupHandler},
-	{"scas", &Cpu::SCAS_GroupHandler},
-	{"ret", &Cpu::RET_GroupHandler},
-	{"les", &Cpu::LES_GroupHandler},
-	{"lds", &Cpu::LDS_GroupHandler},
-	{"int", &Cpu::INT_GroupHandler},
-	{"into", &Cpu::INTO_GroupHandler},
-	{"iret", &Cpu::IRET_GroupHandler},
-	{"rol", &Cpu::ROL_GroupHandler},
-	{"ror", &Cpu::ROR_GroupHandler},
-	{"rcl", &Cpu::RCL_GroupHandler},
-	{"rcr", &Cpu::RCR_GroupHandler},
-	{"sal", &Cpu::SAL_SHL_GroupHandler},
-	{"shr", &Cpu::SHR_GroupHandler},
-	{"sar", &Cpu::SAR_GroupHandler},
-	{"aam", &Cpu::AAM_GroupHandler},
-	{"xlat", &Cpu::XLAT_GroupHandler},
-	{"esc", &Cpu::ESC_GroupHandler},
-	{"loopne_loopnz", &Cpu::LOOPNE_LOOPNZ_GroupHandler},
-	{"loope_loopz", &Cpu::LOOPE_LOOPZ_GroupHandler},
-	{"loop", &Cpu::LOOP_GroupHandler},
-	{"jcxz", &Cpu::JCXZ_GroupHandler},
-	{"in", &Cpu::IN_GroupHandler},
-	{"out", &Cpu::OUT_GroupHandler},
-	{"lock", &Cpu::LOCK_GroupHandler},
-	{"repne_repnz", &Cpu::REPNE_REPNZ_GroupHandler},
-	{"rep_repe_repz", &Cpu::REP_REPE_REPZ_GroupHandler},
-	{"hlt", &Cpu::HLT_GroupHandler},
-	{"cmc", &Cpu::CMC_GroupHandler},
-	{"not", &Cpu::NOT_GroupHandler},
-	{"neg", &Cpu::NEG_GroupHandler},
-	{"mul", &Cpu::MUL_GroupHandler},
-	{"imul", &Cpu::IMUL_GroupHandler},
-	{"div", &Cpu::DIV_GroupHandler},
-	{"idiv", &Cpu::IDIV_GroupHandler},
-	{"clc", &Cpu::CLC_GroupHandler},
-	{"stc", &Cpu::STC_GroupHandler},
-	{"cli", &Cpu::CLI_GroupHandler},
-	{"sti", &Cpu::STI_GroupHandler},
-	{"cld", &Cpu::CLD_GroupHandler},
-	{"std", &Cpu::STD_GroupHandler}
-	*/
-//};
+bool InstructionParser::isRegSource()
+{
+	return !current.d;
+}
+
+uint8_t InstructionParser::defRegField()
+{
+	/*clear form*/
+
+	if(!current.w){
+		return current.reg == 0 ? AL : 
+		       current.reg == 1 ? CL :
+		       current.reg == 2 ? DL :
+		       current.reg == 3 ? BL :
+		       current.reg == 4 ? AH :
+		       current.reg == 5 ? CH :
+		       current.reg == 6 ? DH :
+		       BH;
+	}
+	return current.reg == 0 ? AX : 
+	       current.reg == 1 ? CX :
+	       current.reg == 2 ? DX :
+	       current.reg == 3 ? BX :
+	       current.reg == 4 ? SP :
+	       current.reg == 5 ? BP :
+	       current.reg == 6 ? SI :
+	       DI;
+}
+
+bool InstructionParser::regRegCommand()
+{
+	return current.mod == 3;
+}
 
 
 
-InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *addr)
+InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *baseAddr)
 {
 	/*mem -> lowByte in switch-statement
 	 is the first mem of instruction
 	 */
-	switch(addr -> lowByte){
-		case 0x00 ... 0x05: /*add*/
+	switch(baseAddr -> lowByte){
+		case 0x00 ... 0x05:
 			return &Cpu::ADD_GroupHandler; 
 
-		case 0x06: /*push es*/
-		case 0x0E: /*push cs*/
-		case 0x16: /*push ss*/
-		case 0x1E: /*push ds*/
-		case 0x50 ... 0x57: /*push general registers*/
-		case 0x9C: /*pushf*/
+		case 0x06: 
+		case 0x0E: 
+		case 0x16: 
+		case 0x1E: 
+		case 0x50 ... 0x57: 
+		case 0x9C:
 			return &Cpu::PUSH_GroupHandler;
 
-		case 0x07: /*pop es*/
-		case 0x17: /*pop ss*/
-		case 0x1F: /*pop ds*/
-		case 0x58 ... 0x5E: /*pop general register*/	
-		case 0x8F: /*pop reg16/mem16 */
-		case 0x9D: /*popf*/
+		case 0x07:
+		case 0x17:
+		case 0x1F:
+		case 0x58 ... 0x5E:
+		case 0x8F: 
+		case 0x9D: 
 			return &Cpu::POP_GroupHandler;
 
-		case 0x08 ... 0x0D: /*or*/
+		case 0x08 ... 0x0D: 
 			return &Cpu::OR_GroupHandler;
 
-		case 0x10 ... 0x15: /*adc*/
+		case 0x10 ... 0x15: 
 			return &Cpu::ADC_GroupHandler;
 
 		case 0x18 ... 0x1D:
@@ -501,3 +505,4 @@ InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *addr)
 	return NULL;
 }
 
+} //namespace Emu

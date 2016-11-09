@@ -3,6 +3,11 @@
 
 using std::cout;
 
+namespace Emu{
+
+extern mem_t memory[1<<19];
+
+
 void Cpu::AAD_GroupHandler(mem_t *addr)
 {
 	return ;
@@ -81,7 +86,8 @@ void Cpu::ADD_GroupHandler(mem_t *addr)
 }
 
 void Cpu::PUSH_GroupHandler(mem_t *addr)
-{
+{	
+	
 	cout<<"PUSH\n";
 	return ;
 }
@@ -436,3 +442,5 @@ void Cpu::STD_GroupHandler(mem_t *addr)
 	return ;
 }
 
+
+} //namespace Emu

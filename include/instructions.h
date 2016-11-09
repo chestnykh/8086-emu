@@ -7,6 +7,9 @@
 
 using std::string;
 
+namespace Emu{
+
+
 /*
  This file contains routines which
  can parse six-mem 8086-instruction
@@ -14,11 +17,28 @@ using std::string;
 
 typedef struct instruction
 {
-	uint8_t		one;    /*1st mem of the instruction*/
-	uint8_t		two;    /*2nd mem of the instruction*/
-	uint16_t	disp;   /*3rd and 4th mems of the instruction - optional displacement*/ 
-	uint16_t	data;	/*5th and 6th mems of the instruction - optional immediate constant*/
-	uint8_t		size:3;	/*real size of instruction from 1 to 6*/
+	uint8_t Opcode;
+	uint8_t d;
+	uint8_t w;
+	uint8_t mod;
+	uint8_t reg;
+	uint8_t rm;
+
+	union{
+		uint16_t disp;
+		struct{
+			uint8_t lowDisp;
+			uint16_t highDisp;
+		};
+	} disp;
+
+	union{
+		uint16_t data;
+		struct{
+			uint8_t lowData;
+			uint16_t highData;
+		};
+	} data;
 } instr_t;	
 
 
@@ -42,7 +62,7 @@ enum instructionFieldsSizes{
 };
 
 
-
+/*
 uint8_t OPCODE(struct instruction instr);
 uint8_t OPCODE(struct instruction *instr);
 
@@ -73,6 +93,7 @@ uint8_t LOW_DATA(struct instruction *instr);
 uint8_t HIGH_DATA(struct instruction instr);
 uint8_t HIGH_DATA(struct instruction *instr);
 
+*/
 
 uint8_t D(mem_t *addr);
 uint8_t W(mem_t *addr);
@@ -83,6 +104,7 @@ uint8_t LOW_DISP(mem_t *addr);
 uint8_t HIGH_DISP(mem_t *addr);
 uint8_t LOW_DATA(mem_t *addr);
 uint8_t HIGH_DATA(mem_t *addr);
+
 
 
 class Cpu;
@@ -97,6 +119,9 @@ private:
 
 public:
 	mem_t *startAddr;
+
+	void setCurrentInstrFields(mem_t *baseAddr);
+	struct instruction getCurrentInstr() const;
 	/*constructor parameter should be a pointer to memory the instruction located in */
 	InstructionParser(mem_t *addr);
 
@@ -112,9 +137,15 @@ public:
 	void decodeInstr(struct instruction instr);
 
 
+	/*baseAddr means the startAddress of instruction (first 2 bytes)*/
+	bool isRegSource(); //check whether REG field identifies source operand or dest operand
+	bool regRegCommand();
+	uint8_t defRegField();
+
 	friend void dumpHex(const struct instruction& instr);
 	friend void dumpBin(const struct instruction& instr);
 	friend void dumpDec(const struct instruction& instr);
 };
 	
 
+} //namespace Emu
