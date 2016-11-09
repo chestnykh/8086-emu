@@ -5,7 +5,9 @@
 #include <iostream>
 
 using std::cout;
+namespace Emu{
 
+/*
 void dumpHex(const struct instruction& instr)
 {
 	cout<<"\nHEXADECIMAL DUMP:\n";
@@ -130,3 +132,7 @@ void InstructionParser::dumpInstr()
 	return;
 
 }
+*/
+
+
+} //namespace Emu
