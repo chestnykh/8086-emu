@@ -114,14 +114,14 @@ typedef void (Cpu::*InstructionGroupHandler_t)(mem_t *);
 class InstructionParser{
 private:
 	struct instruction current;
-//	static std::map <mem_t, void *(InstructionParser::*)(addr_t *)> opcodeGroupHandlers;
+	struct instruction& curlink = current;
 
 
 public:
 	mem_t *startAddr;
 
 	void setCurrentInstrFields(mem_t *baseAddr);
-	struct instruction getCurrentInstr() const;
+	struct instruction& getCurrentInstr() const;
 	/*constructor parameter should be a pointer to memory the instruction located in */
 	InstructionParser(mem_t *addr);
 
@@ -140,7 +140,7 @@ public:
 	/*baseAddr means the startAddress of instruction (first 2 bytes)*/
 	bool isRegSource(); //check whether REG field identifies source operand or dest operand
 	bool regRegCommand();
-	uint8_t defRegField();
+	//uint8_t getRegField();
 
 	friend void dumpHex(const struct instruction& instr);
 	friend void dumpBin(const struct instruction& instr);

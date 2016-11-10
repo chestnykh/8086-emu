@@ -5,6 +5,7 @@
 #include "instructions.h"
 #include "memory.h"
 #include <map>
+#include <array>
 
 
 namespace Emu{
@@ -81,8 +82,12 @@ enum regCodes{
 	DI = 7
 };
 
+/*for getByteRegister() and getWordRegister() functions*/
+
+
 class Cpu;
 typedef void (Cpu::*InstructionGroupHandler_t)(mem_t *);
+typedef uint16_t (Cpu::*EffAddrCalc_t)(struct instruction&);
 
 class Cpu{
 
@@ -179,9 +184,29 @@ private:
 	void GRP_FF_GroupHandler(mem_t *addr);
 	void segOverridePrefixHandler(mem_t *addr);
 
+	uint16_t RM0_EffAddr(struct instruction& cur);
+	uint16_t RM1_EffAddr(struct instruction& cur);
+	uint16_t RM2_EffAddr(struct instruction& cur);
+	uint16_t RM3_EffAddr(struct instruction& cur);
+	uint16_t RM4_EffAddr(struct instruction& cur);
+	uint16_t RM5_EffAddr(struct instruction& cur);
+	uint16_t RM6_EffAddr(struct instruction& cur);
+	uint16_t RM7_EffAddr(struct instruction& cur);
+
+	uint16_t getEffectiveAddress(struct instruction& cur);
+
+
+	uint8_t getByteRegister(uint8_t fieldSpecification, struct instruction& cur); //field: reg or rm
+	uint16_t getWordRegister(uint8_t fieldSpecification, struct instruction& cur); //field: reg or rm
+
+	std::array<EffAddrCalc_t , 8> addrCalculator;
 
 public:
 	struct cpuregs regs;
+
+	/*this function must be defined here, not in InstructionParser class
+	 because that class knows nothing about cpu registers (struct cpuregs)
+	 */
 
 
 	InstructionParser *Parser;

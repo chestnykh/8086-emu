@@ -210,9 +210,9 @@ void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
 	cout<<(unsigned)current.data.highData<<'\n';
 }
 
-struct instruction InstructionParser::getCurrentInstr() const
+struct instruction& InstructionParser::getCurrentInstr() const
 {
-	return current;
+	return curlink;
 }
 
 
@@ -221,9 +221,9 @@ bool InstructionParser::isRegSource()
 	return !current.d;
 }
 
-uint8_t InstructionParser::defRegField()
+/*
+uint8_t InstructionParser::getRegField()
 {
-	/*clear form*/
 
 	if(!current.w){
 		return current.reg == 0 ? AL : 
@@ -244,6 +244,7 @@ uint8_t InstructionParser::defRegField()
 	       current.reg == 6 ? SI :
 	       DI;
 }
+*/
 
 bool InstructionParser::regRegCommand()
 {
