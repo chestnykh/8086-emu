@@ -6,7 +6,10 @@ src/tests/
 src/trash/
 src/CMake*
 src/cmake*
-src/!CMakeLists.txt
+!src/CMakeLists.txt
 CMake*
 cmake*
 !CMakeLists.txt
+
+Makefile
+src/Makefile
