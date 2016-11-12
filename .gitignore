@@ -1,6 +1,3 @@
-*.out
-*.o
-8086-emu
-tests/
-trash/
-*.sh
+!CMakeLists.txt
+CMake*
+cmake*

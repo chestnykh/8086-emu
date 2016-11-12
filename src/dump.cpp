@@ -7,6 +7,7 @@
 using std::cout;
 namespace Emu{
 
+
 /*
 void dumpHex(const struct instruction& instr)
 {
