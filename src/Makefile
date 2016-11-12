@@ -51,7 +51,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /home/dima/Documents/progs/c/8086
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/dima/Documents/progs/c/8086
+CMAKE_BINARY_DIR = /home/dima/Documents/progs/c/8086/src
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,14 +80,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/dima/Documents/progs/c/8086 && $(CMAKE_COMMAND) -E cmake_progress_start /home/dima/Documents/progs/c/8086/CMakeFiles /home/dima/Documents/progs/c/8086/src/CMakeFiles/progress.marks
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f CMakeFiles/Makefile2 src/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dima/Documents/progs/c/8086/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dima/Documents/progs/c/8086/src/CMakeFiles /home/dima/Documents/progs/c/8086/src/CMakeFiles/progress.marks
+	$(MAKE) -f CMakeFiles/Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dima/Documents/progs/c/8086/src/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f CMakeFiles/Makefile2 src/clean
+	$(MAKE) -f CMakeFiles/Makefile2 clean
 .PHONY : clean
 
 # The main clean target
@@ -97,168 +97,31 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/dima/Documents/progs/c/8086 && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-src/CMakeFiles/emu.dir/rule:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/emu.dir/rule
-.PHONY : src/CMakeFiles/emu.dir/rule
+#=============================================================================
+# Target rules for targets named emu
 
-# Convenience name for target.
-emu: src/CMakeFiles/emu.dir/rule
-
+# Build rule for target.
+emu: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 emu
 .PHONY : emu
 
 # fast build rule for target.
 emu/fast:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/build
+	$(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/build
 .PHONY : emu/fast
-
-cpu.o: cpu.cpp.o
-
-.PHONY : cpu.o
-
-# target to build an object file
-cpu.cpp.o:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpu.cpp.o
-.PHONY : cpu.cpp.o
-
-cpu.i: cpu.cpp.i
-
-.PHONY : cpu.i
-
-# target to preprocess a source file
-cpu.cpp.i:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpu.cpp.i
-.PHONY : cpu.cpp.i
-
-cpu.s: cpu.cpp.s
-
-.PHONY : cpu.s
-
-# target to generate assembly for a file
-cpu.cpp.s:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpu.cpp.s
-.PHONY : cpu.cpp.s
-
-cpuexec.o: cpuexec.cpp.o
-
-.PHONY : cpuexec.o
-
-# target to build an object file
-cpuexec.cpp.o:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpuexec.cpp.o
-.PHONY : cpuexec.cpp.o
-
-cpuexec.i: cpuexec.cpp.i
-
-.PHONY : cpuexec.i
-
-# target to preprocess a source file
-cpuexec.cpp.i:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpuexec.cpp.i
-.PHONY : cpuexec.cpp.i
-
-cpuexec.s: cpuexec.cpp.s
-
-.PHONY : cpuexec.s
-
-# target to generate assembly for a file
-cpuexec.cpp.s:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/cpuexec.cpp.s
-.PHONY : cpuexec.cpp.s
-
-dump.o: dump.cpp.o
-
-.PHONY : dump.o
-
-# target to build an object file
-dump.cpp.o:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/dump.cpp.o
-.PHONY : dump.cpp.o
-
-dump.i: dump.cpp.i
-
-.PHONY : dump.i
-
-# target to preprocess a source file
-dump.cpp.i:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/dump.cpp.i
-.PHONY : dump.cpp.i
-
-dump.s: dump.cpp.s
-
-.PHONY : dump.s
-
-# target to generate assembly for a file
-dump.cpp.s:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/dump.cpp.s
-.PHONY : dump.cpp.s
-
-main.o: main.cpp.o
-
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/main.cpp.s
-.PHONY : main.cpp.s
-
-parser.o: parser.cpp.o
-
-.PHONY : parser.o
-
-# target to build an object file
-parser.cpp.o:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/parser.cpp.o
-.PHONY : parser.cpp.o
-
-parser.i: parser.cpp.i
-
-.PHONY : parser.i
-
-# target to preprocess a source file
-parser.cpp.i:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/parser.cpp.i
-.PHONY : parser.cpp.i
-
-parser.s: parser.cpp.s
-
-.PHONY : parser.s
-
-# target to generate assembly for a file
-parser.cpp.s:
-	cd /home/dima/Documents/progs/c/8086 && $(MAKE) -f src/CMakeFiles/emu.dir/build.make src/CMakeFiles/emu.dir/parser.cpp.s
-.PHONY : parser.cpp.s
 
 # Help Target
 help:
@@ -269,21 +132,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... emu"
-	@echo "... cpu.o"
-	@echo "... cpu.i"
-	@echo "... cpu.s"
-	@echo "... cpuexec.o"
-	@echo "... cpuexec.i"
-	@echo "... cpuexec.s"
-	@echo "... dump.o"
-	@echo "... dump.i"
-	@echo "... dump.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... parser.o"
-	@echo "... parser.i"
-	@echo "... parser.s"
 .PHONY : help
 
 
@@ -295,6 +143,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/dima/Documents/progs/c/8086 && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
