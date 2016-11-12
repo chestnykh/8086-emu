@@ -13,25 +13,25 @@ Cpu::Cpu(uint16_t startCs, unsigned startIp)
 	regs.cs = startCs;
 	regs.ip = startIp;
 	byteRegMap = {
-		{0, regs.ax.al},
-		{1, regs.cx.cl},
-		{2, regs.dx.dl},
-		{3, regs.bx.bl},
-		{4, regs.ax.ah},
-		{5, regs.cx.ch},
-		{6, regs.dx.dh},
-		{7, regs.bx.bh}
+		{0, &regs.ax.al},
+		{1, &regs.cx.cl},
+		{2, &regs.dx.dl},
+		{3, &regs.bx.bl},
+		{4, &regs.ax.ah},
+		{5, &regs.cx.ch},
+		{6, &regs.dx.dh},
+		{7, &regs.bx.bh}
 	};
 
 	wordRegMap = {
-		{0, regs.ax.ax},
-		{1, regs.cx.cx},
-		{2, regs.dx.dx},
-		{3, regs.bx.bx},
-		{4, regs.sp},
-		{5, regs.bp},
-		{6, regs.si},
-		{7, regs.di}
+		{0, &regs.ax.ax},
+		{1, &regs.cx.cx},
+		{2, &regs.dx.dx},
+		{3, &regs.bx.bx},
+		{4, &regs.sp},
+		{5, &regs.bp},
+		{6, &regs.si},
+		{7, &regs.di}
 	};
 	
 	addrCalculator[0] = &Cpu::RM0_EffAddr;
@@ -48,6 +48,13 @@ Cpu::~Cpu()
 {
 	delete Cpu::Parser;
 }
+
+void Cpu::dump()
+{
+	std::cout<<wordRegMap[0]<<'\n';
+}
+
+
 
 uint16_t Cpu::RM0_EffAddr(struct instruction& cur)
 {
@@ -144,6 +151,23 @@ uint16_t Cpu::getEffectiveAddress(struct instruction& cur)
 }
 
 
+template <>
+uint8_t *Cpu::getRegister<uint8_t>(uint8_t field, struct instruction& cur)
+{
+	if(field == REG_FIELD)
+		return byteRegMap.find(cur.reg) -> second;
 
+	return byteRegMap.find(cur.rm) -> second;
+}
+
+template <>
+uint16_t *Cpu::getRegister<uint16_t>(uint8_t field, struct instruction& cur)  
+{
+	if(field == REG_FIELD)
+		return wordRegMap.find(cur.reg) -> second;
+
+	return wordRegMap.find(cur.rm) -> second;
+}
+	
 
 } //namespace Emu

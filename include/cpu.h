@@ -55,7 +55,6 @@ struct cpuregs
 	uint16_t es;
 	unsigned ip; /*Instruction Pointer*/
 	uint16_t flags;
-
 };
 
 
@@ -82,19 +81,23 @@ enum regCodes{
 	DI = 7
 };
 
-/*for getByteRegister() and getWordRegister() functions*/
-
 
 class Cpu;
 typedef void (Cpu::*InstructionGroupHandler_t)(mem_t *);
 typedef uint16_t (Cpu::*EffAddrCalc_t)(struct instruction&);
 
+
+
+/*for getRegister()*/
+#define REG_FIELD 0
+#define RM_FIELD 1
+
+
 class Cpu{
 
 	friend class InstructionParser;
 private:
-	std::map <uint8_t, uint8_t> byteRegMap;
-	std::map <uint8_t, uint16_t> wordRegMap;
+
 
 	void ADD_GroupHandler(mem_t *addr);
 	void PUSH_GroupHandler(mem_t *addr);
@@ -196,24 +199,24 @@ private:
 	uint16_t getEffectiveAddress(struct instruction& cur);
 
 
-	uint8_t getByteRegister(uint8_t fieldSpecification, struct instruction& cur); //field: reg or rm
-	uint16_t getWordRegister(uint8_t fieldSpecification, struct instruction& cur); //field: reg or rm
-
 	std::array<EffAddrCalc_t , 8> addrCalculator;
 
 public:
 	struct cpuregs regs;
+	std::map <uint8_t, uint8_t *> byteRegMap;
+	std::map <uint8_t, uint16_t *> wordRegMap;
 
-	/*this function must be defined here, not in InstructionParser class
-	 because that class knows nothing about cpu registers (struct cpuregs)
-	 */
-
-
+	template <typename T>
+	T* getRegister(uint8_t field, struct instruction& cur);
 	InstructionParser *Parser;
 
+
+	void dump();
 	Cpu(uint16_t startCs , unsigned startIp);
 	~Cpu();
 };
+
+//#include "cpu.tpp"
 
 } //namespace Emu
 
