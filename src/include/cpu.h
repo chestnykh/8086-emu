@@ -8,53 +8,59 @@
 #include <array>
 
 
+typedef uint16_t u16;
+typedef uint8_t u8;
+
+typedef u8* breg_t;
+typedef u16* wreg_t;
+
 namespace Emu{
 
 
 struct cpuregs
 {
 	union{
-		uint16_t ax;
+		u16 ax;
 		struct{
-			uint8_t al;
-			uint8_t ah;
+			u8 al;
+			u8 ah;
 		};
 	} ax;
 
 	union{
-		uint16_t bx;
+		u16 bx;
 		struct{
-			uint8_t bl;
-			uint8_t bh;
+			u8 bl;
+			u8 bh;
 		};
 	} bx;
 
 	union{
-		uint16_t cx;
+		u16 cx;
 		struct{
-			uint8_t cl;
-			uint8_t ch;
+			u8 cl;
+			u8 ch;
 		};
 	} cx;
 	
 	union{
-		uint16_t dx;
+		u16 dx;
 		struct{
-			uint8_t dl;
-			uint8_t dh;
+			u8 dl;
+			u8 dh;
 		};
 	} dx;
 
-	uint16_t sp;
-	uint16_t bp;
-	uint16_t si;
-	uint16_t di;
-	uint16_t cs;
-	uint16_t ds;
-	uint16_t ss;
-	uint16_t es;
+	u16 sp;
+	u16 bp;
+	u16 si;
+	u16 di;
+	u16 cs;
+	u16 ds;
+	u16 ss;
+	u16 es;
 	unsigned ip; /*Instruction Pointer*/
-	uint16_t flags;
+	u16 flags;
 };
 
 
@@ -84,7 +90,7 @@ enum regCodes{
 
 class Cpu;
 typedef void (Cpu::*InstructionGroupHandler_t)(mem_t *);
-typedef uint16_t (Cpu::*EffAddrCalc_t)(struct instruction&);
+typedef u16 (Cpu::*EffAddrCalc_t)(struct instruction&);
 
 
 
@@ -93,11 +99,35 @@ typedef uint16_t (Cpu::*EffAddrCalc_t)(struct instruction&);
 #define RM_FIELD 1
 
 
+
+/*set bits in flags register*/
+#define SETCF(flags) (flags |= 1<<0)
+#define SETPF(flags) (flags |= 1<<2)
+#define SETAF(flags) (flags |= 1<<4)
+#define SETZF(flags) (flags |= 1<<6)
+#define SETSF(flags) (flags |= 1<<7)
+#define SETTF(flags) (flags |= 1<<8)
+#define SETIF(flags) (flags |= 1<<9)
+#define SETDF(flags) (flags |= 1<<10)
+#define SETOF(flags) (flags |= 1<<11)
+
+
+/*clear bits in flags register*/
+#define CLRCF(flags) (flags &= ~(1<<0))
+#define CLRPF(flags) (flags &= ~(1<<2))
+#define CLRAF(flags) (flags &= ~(1<<4))
+#define CLRZF(flags) (flags &= ~(1<<6))
+#define CLRSF(flags) (flags &= ~(1<<7))
+#define CLRTF(flags) (flags &= ~(1<<8))
+#define CLRIF(flags) (flags &= ~(1<<9))
+#define CLRDF(flags) (flags &= ~(1<<10))
+#define CLROF(flags) (flags &= ~(1<<11))
+
+
 class Cpu{
 
 	friend class InstructionParser;
 private:
-
 
 	void ADD_GroupHandler(mem_t *addr);
 	void PUSH_GroupHandler(mem_t *addr);
@@ -187,36 +217,46 @@ private:
 	void GRP_FF_GroupHandler(mem_t *addr);
 	void segOverridePrefixHandler(mem_t *addr);
 
-	uint16_t RM0_EffAddr(struct instruction& cur);
-	uint16_t RM1_EffAddr(struct instruction& cur);
-	uint16_t RM2_EffAddr(struct instruction& cur);
-	uint16_t RM3_EffAddr(struct instruction& cur);
-	uint16_t RM4_EffAddr(struct instruction& cur);
-	uint16_t RM5_EffAddr(struct instruction& cur);
-	uint16_t RM6_EffAddr(struct instruction& cur);
-	uint16_t RM7_EffAddr(struct instruction& cur);
+	u16 RM0_EffAddr(struct instruction& cur);
+	u16 RM1_EffAddr(struct instruction& cur);
+	u16 RM2_EffAddr(struct instruction& cur);
+	u16 RM3_EffAddr(struct instruction& cur);
+	u16 RM4_EffAddr(struct instruction& cur);
+	u16 RM5_EffAddr(struct instruction& cur);
+	u16 RM6_EffAddr(struct instruction& cur);
+	u16 RM7_EffAddr(struct instruction& cur);
 
-	uint16_t getEffectiveAddress(struct instruction& cur);
-
+	u16 getEffectiveAddress(struct instruction& cur);
+	InstructionParser *Parser;
 
 	std::array<EffAddrCalc_t , 8> addrCalculator;
+	std::map <u8, u8 *> byteRegMap;
+	std::map <u8, u16 *> wordRegMap;
 
 public:
+	Cpu(u16 startCs , unsigned startIp);
+	~Cpu();
+	void flagsState();
+
+
+	/*some of these interface methods
+	  may be temporary
+   	 */
+	inline u16 word(mem_t *addr){
+		return (u16)(*addr) + (u16)((*(addr+1)) << 8);
+	}
+
 	struct cpuregs regs;
-	std::map <uint8_t, uint8_t *> byteRegMap;
-	std::map <uint8_t, uint16_t *> wordRegMap;
+
 
 	template <typename T>
-	T* getRegister(uint8_t field, struct instruction& cur);
-	InstructionParser *Parser;
+	T* getRegister(u8 field, struct instruction& cur);
+	//reg_t& getReg(u8 field, const struct instruction& cur);
 
 
 	void dump();
-	Cpu(uint16_t startCs , unsigned startIp);
-	~Cpu();
 };
 
-//#include "cpu.tpp"
 
 } //namespace Emu
 

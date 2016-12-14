@@ -12,7 +12,7 @@ namespace Emu{
 void dumpHex(const struct instruction& instr)
 {
 	cout<<"\nHEXADECIMAL DUMP:\n";
-	for(uint8_t i=1; i<=instr.size; i++){
+	for(u8 i=1; i<=instr.size; i++){
 		cout<<"***Byte number "<<(unsigned)i<<"***\n";
 		cout<<"FULL BYTE: ";
 		if(i == 1){
@@ -51,7 +51,7 @@ void dumpHex(const struct instruction& instr)
 void dumpBin(const struct instruction& instr)
 {
 	cout<<"\nBINARY DUMP:\n";
-	for(uint8_t i=1; i<instr.size; i++){
+	for(u8 i=1; i<instr.size; i++){
 		cout<<"***Byte number "<<(unsigned)i<<"***\n";
 		cout<<"FULL BYTE: ";
 		if(i == 1){
@@ -94,7 +94,7 @@ void dumpBin(const struct instruction& instr)
 void dumpDec(const struct instruction& instr)
 {
 	cout<<"\nDECIMAL DUMP:\n";
-	for(uint8_t i=0; i<instr.size; i++){
+	for(u8 i=0; i<instr.size; i++){
 		cout<<"***Byte number "<<(unsigned)i<<"***\n";
 		cout<<"Full byte: ";
 		if(i == 1){

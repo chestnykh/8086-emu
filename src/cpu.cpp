@@ -1,13 +1,17 @@
 #include <cpu.h>
-#include "memory.h"
+#include <memory.h>
 #include <iostream>
+
+
+typedef uint16_t u16;
+typedef uint8_t u8;
 
 namespace Emu{
 
-extern mem_t memory[1<<19];
+extern mem_t memory[1<<20];
 
 
-Cpu::Cpu(uint16_t startCs, unsigned startIp)
+Cpu::Cpu(u16 startCs, unsigned startIp)
 {
 	Cpu::Parser = new InstructionParser(memory+startIp);
 	regs.cs = startCs;
@@ -51,71 +55,74 @@ Cpu::~Cpu()
 
 void Cpu::dump()
 {
-	std::cout<<wordRegMap[0]<<'\n';
+	std::cout<<"AX: "<<regs.ax.ax<<' '<<(unsigned)regs.ax.al<<' '<<(unsigned)regs.ax.ah<<'\n';
+	std::cout<<"BX: "<<regs.bx.bx<<' '<<(unsigned)regs.bx.bl<<' '<<(unsigned)regs.bx.bh<<'\n';
+	std::cout<<"CX: "<<regs.cx.cx<<' '<<(unsigned)regs.cx.cl<<' '<<(unsigned)regs.cx.ch<<'\n';
+	std::cout<<"DX: "<<regs.dx.dx<<' '<<(unsigned)regs.dx.dl<<' '<<(unsigned)regs.dx.dh<<'\n';
 }
 
 
 
-uint16_t Cpu::RM0_EffAddr(struct instruction& cur)
+u16 Cpu::RM0_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.bx.bx + regs.si :
 	       cur.mod == 1 ? regs.bx.bx + regs.si + cur.disp.lowDisp :
 	       regs.bx.bx + regs.si + cur.disp.disp; //cur.mod == 2
 }
 
-uint16_t Cpu::RM1_EffAddr(struct instruction& cur)
+u16 Cpu::RM1_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.bx.bx + regs.di :
 	       cur.mod == 1 ? regs.bx.bx + regs.di + cur.disp.lowDisp :
 	       regs.bx.bx + regs.di + cur.disp.disp;
 }
 
-uint16_t Cpu::RM2_EffAddr(struct instruction& cur)
+u16 Cpu::RM2_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.bp + regs.si :
 	       cur.mod == 1 ? regs.bp + regs.si + cur.disp.lowDisp :
 	       regs.bp + regs.si + cur.disp.disp;
 }
 
-uint16_t Cpu::RM3_EffAddr(struct instruction& cur)
+u16 Cpu::RM3_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.bp + regs.di :
 	       cur.mod == 1 ? regs.bp + regs.di + cur.disp.lowDisp :
 	       regs.bp + regs.di + cur.disp.disp;
 }
 
-uint16_t Cpu::RM4_EffAddr(struct instruction& cur)
+u16 Cpu::RM4_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.si :
 	       cur.mod == 1 ? regs.si + cur.disp.lowDisp :
 	       regs.si + cur.disp.disp;
 }
 
-uint16_t Cpu::RM5_EffAddr(struct instruction& cur)
+u16 Cpu::RM5_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.di :
 	       cur.mod == 1 ? regs.di + cur.disp.lowDisp :
@@ -123,36 +130,36 @@ uint16_t Cpu::RM5_EffAddr(struct instruction& cur)
 
 }
 
-uint16_t Cpu::RM6_EffAddr(struct instruction& cur)
+u16 Cpu::RM6_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? cur.disp.disp :
 	       cur.mod == 1 ? regs.bp + cur.disp.lowDisp :
 	       regs.bp + cur.disp.disp;
 }
 
-uint16_t Cpu::RM7_EffAddr(struct instruction& cur)
+u16 Cpu::RM7_EffAddr(struct instruction& cur)
 {
 	if(cur.mod == 3){
 		std::cerr<<"Bad MOD value to call this function\n";
-		return (uint16_t)-1; //65535
+		return (u16)-1; //65535
 	}
 	return cur.mod == 0 ? regs.bx.bx :
 	       cur.mod == 1 ? regs.bx.bx + cur.disp.lowDisp :
 	       regs.bx.bx + cur.disp.disp;
 }
 
-uint16_t Cpu::getEffectiveAddress(struct instruction& cur)
+u16 Cpu::getEffectiveAddress(struct instruction& cur)
 {
 	return (this ->* addrCalculator[cur.rm])(cur);
 }
 
 
 template <>
-uint8_t *Cpu::getRegister<uint8_t>(uint8_t field, struct instruction& cur)
+u8 *Cpu::getRegister<u8>(u8 field, struct instruction& cur)
 {
 	if(field == REG_FIELD)
 		return byteRegMap.find(cur.reg) -> second;
@@ -161,13 +168,24 @@ uint8_t *Cpu::getRegister<uint8_t>(uint8_t field, struct instruction& cur)
 }
 
 template <>
-uint16_t *Cpu::getRegister<uint16_t>(uint8_t field, struct instruction& cur)  
+u16 *Cpu::getRegister<u16>(u8 field, struct instruction& cur)  
 {
 	if(field == REG_FIELD)
 		return wordRegMap.find(cur.reg) -> second;
 
 	return wordRegMap.find(cur.rm) -> second;
 }
-	
+
+
+void Cpu::flagsState()
+{
+	int flags = 0;
+	std::cout<<"flags = "<<flags<<'\n';
+}
+
+
+
+
+
 
 } //namespace Emu

@@ -7,6 +7,9 @@
 
 using std::string;
 
+typedef uint16_t u16;
+typedef uint8_t u8;
+
 namespace Emu{
 
 
@@ -17,26 +20,26 @@ namespace Emu{
 
 typedef struct instruction
 {
-	uint8_t Opcode;
-	uint8_t d;
-	uint8_t w;
-	uint8_t mod;
-	uint8_t reg;
-	uint8_t rm;
+	u8 Opcode;
+	u8 d;
+	u8 w;
+	u8 mod;
+	u8 reg;
+	u8 rm;
 
 	union{
-		uint16_t disp;
+		u16 disp;
 		struct{
-			uint8_t lowDisp;
-			uint16_t highDisp;
+			u8 lowDisp;
+			u16 highDisp;
 		};
 	} disp;
 
 	union{
-		uint16_t data;
+		u16 data;
 		struct{
-			uint8_t lowData;
-			uint16_t highData;
+			u8 lowData;
+			u16 highData;
 		};
 	} data;
 } instr_t;	
@@ -63,47 +66,47 @@ enum instructionFieldsSizes{
 
 
 /*
-uint8_t OPCODE(struct instruction instr);
-uint8_t OPCODE(struct instruction *instr);
+u8 OPCODE(struct instruction instr);
+u8 OPCODE(struct instruction *instr);
 
-uint8_t D(struct instruction instr);
-uint8_t D(struct instruction *instr);
+u8 D(struct instruction instr);
+u8 D(struct instruction *instr);
 
-uint8_t W(struct instruction instr);
-uint8_t W(struct instruction *instr);
+u8 W(struct instruction instr);
+u8 W(struct instruction *instr);
 
-uint8_t MOD(struct instruction instr);
-uint8_t MOD(struct instruction *instr);
+u8 MOD(struct instruction instr);
+u8 MOD(struct instruction *instr);
 
-uint8_t REG(struct instruction instr);
-uint8_t REG(struct instruction *instr);
+u8 REG(struct instruction instr);
+u8 REG(struct instruction *instr);
 
-uint8_t RM(struct instruction instr);
-uint8_t RM(struct instruction *instr);
+u8 RM(struct instruction instr);
+u8 RM(struct instruction *instr);
 
-uint8_t LOW_DISP(struct instruction instr);
-uint8_t LOW_DISP(struct instruction *instr);
+u8 LOW_DISP(struct instruction instr);
+u8 LOW_DISP(struct instruction *instr);
 
-uint8_t HIGH_DISP(struct instruction instr);
-uint8_t HIGH_DISP(struct instruction *instr);
+u8 HIGH_DISP(struct instruction instr);
+u8 HIGH_DISP(struct instruction *instr);
 
-uint8_t LOW_DATA(struct instruction instr);
-uint8_t LOW_DATA(struct instruction *instr);
+u8 LOW_DATA(struct instruction instr);
+u8 LOW_DATA(struct instruction *instr);
 
-uint8_t HIGH_DATA(struct instruction instr);
-uint8_t HIGH_DATA(struct instruction *instr);
+u8 HIGH_DATA(struct instruction instr);
+u8 HIGH_DATA(struct instruction *instr);
 
 */
 
-uint8_t D(mem_t *addr);
-uint8_t W(mem_t *addr);
-uint8_t MOD(mem_t *addr);
-uint8_t REG(mem_t *addr);
-uint8_t RM(mem_t *addr);
-uint8_t LOW_DISP(mem_t *addr);
-uint8_t HIGH_DISP(mem_t *addr);
-uint8_t LOW_DATA(mem_t *addr);
-uint8_t HIGH_DATA(mem_t *addr);
+u8 D(mem_t *addr);
+u8 W(mem_t *addr);
+u8 MOD(mem_t *addr);
+u8 REG(mem_t *addr);
+u8 RM(mem_t *addr);
+u8 LOW_DISP(mem_t *addr);
+u8 HIGH_DISP(mem_t *addr);
+u8 LOW_DATA(mem_t *addr);
+u8 HIGH_DATA(mem_t *addr);
 
 
 
@@ -140,7 +143,7 @@ public:
 	/*baseAddr means the startAddress of instruction (first 2 bytes)*/
 	bool isRegSource(); //check whether REG field identifies source operand or dest operand
 	bool regRegCommand();
-	//uint8_t getRegField();
+	//u8 getRegField();
 
 	friend void dumpHex(const struct instruction& instr);
 	friend void dumpBin(const struct instruction& instr);

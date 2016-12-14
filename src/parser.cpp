@@ -4,6 +4,10 @@
 
 using std::cout;
 
+
+typedef uint16_t u16;
+typedef uint8_t u8;
+
 namespace Emu{
 
 InstructionParser::InstructionParser(mem_t *addr)
@@ -24,166 +28,171 @@ InstructionParser::~InstructionParser()
 
 
 /*
-uint8_t OPCODE(struct instruction instr)
+u8 OPCODE(struct instruction instr)
 {
 	return instr.one >> 2;
 }
 
-uint8_t OPCODE(struct instruction *instr)
+u8 OPCODE(struct instruction *instr)
 {
 	return (instr -> one) >> 2;
 }
 
 
-uint8_t D(struct instruction instr)
+u8 D(struct instruction instr)
 {
 	return (instr.one >> 1) & 0x01;
 }
 
 
-uint8_t D(struct instruction *instr)
+u8 D(struct instruction *instr)
 {
 	return ((instr -> one) >> 1) & 0x01;
 }
 
 */
 
-uint8_t D(mem_t *addr)
+u8 D(mem_t *addr)
 {
-	return ((addr -> lowByte) >> 1) & 0x01;
+	return ((*addr) >> 1) & 1;
 }
 
 /*
-uint8_t W(struct instruction instr)
+u8 W(struct instruction instr)
 {
 	return instr.one & 0x01;
 }
-uint8_t W(struct instruction *instr)
+u8 W(struct instruction *instr)
 {
 	return (instr -> one) & 0x01;
 }
 */
 
-uint8_t W(mem_t *addr)
+u8 W(mem_t *addr)
 {
-	return (addr -> lowByte) & 0x01;
+	return (*addr) & 1;
 }
 
 /*
-uint8_t MOD(struct instruction instr)
+u8 MOD(struct instruction instr)
 {
 	return instr.two >> 6;
 }
-uint8_t MOD(struct instruction *instr)
+u8 MOD(struct instruction *instr)
 {
 	return (instr -> two) >> 6;
 }
 */
 
-uint8_t MOD(mem_t *addr)
+u8 MOD(mem_t *addr)
 {
-	return (addr -> highByte) >> 6;
+	return (*addr) >> 6;
 }
 
 
 /*
-uint8_t REG(struct instruction instr)
+u8 REG(struct instruction instr)
 {
 	return (instr.two >> 3) & 0x07;
 }
-uint8_t REG(struct instruction *instr)
+u8 REG(struct instruction *instr)
 {
 	return ((instr -> two) >> 3) & 0x07;
 }
 */
 
-uint8_t REG(mem_t *addr)
+u8 REG(mem_t *addr)
 {
-	return ((addr -> highByte) >> 3) & 0x07;
+	return ((*addr) >> 3) & 7;
 }
 
 /*
-uint8_t RM(struct instruction instr)
+u8 RM(struct instruction instr)
 {
 	return instr.two & 0x07;
 }
-uint8_t RM(struct instruction *instr)
+u8 RM(struct instruction *instr)
 {
 	return (instr -> two) & 0x07;
 }
 
 */
-uint8_t RM(mem_t *addr)
+u8 RM(mem_t *addr)
 {
-	return (addr -> highByte) & 0x07;
+	return (*addr) & 0x07;
 }
 
 /*
-uint8_t LOW_DISP(struct instruction instr)
+u8 LOW_DISP(struct instruction instr)
 {
-	return (uint8_t)(instr.disp & 0xFF);
+	return (u8)(instr.disp & 0xFF);
 }
 
-uint8_t LOW_DISP(struct instruction *instr)
+u8 LOW_DISP(struct instruction *instr)
 {
-	return uint8_t((instr -> disp) & 0xFF);
+	return u8((instr -> disp) & 0xFF);
 }
 */
 
-uint8_t LOW_DISP(mem_t *addr)
+
+//interpret address as low part of displacement
+u8 LOW_DISP(mem_t *addr)
 {
-	return addr -> lowByte;
+	return *addr;
 }
 
 /*
-uint8_t HIGH_DISP(struct instruction instr)
+u8 HIGH_DISP(struct instruction instr)
 {
-	return (uint8_t)(instr.disp >> 8);
+	return (u8)(instr.disp >> 8);
 }
 
-uint8_t HIGH_DISP(struct instruction *instr)
+u8 HIGH_DISP(struct instruction *instr)
 {
-	return (uint8_t)((instr -> disp) >> 8);
+	return (u8)((instr -> disp) >> 8);
 }
 */
 
-uint8_t HIGH_DISP(mem_t *addr)
+//interpret address as high part of displacement
+u8 HIGH_DISP(mem_t *addr)
 {
-	return addr -> highByte; 
+	return *addr; 
 }
 
 /*
-uint8_t LOW_DATA(struct instruction instr)
+u8 LOW_DATA(struct instruction instr)
 {
-	return (uint8_t)(instr.data & 0xFF);
+	return (u8)(instr.data & 0xFF);
 }
 
-uint8_t LOW_DATA(struct instruction *instr)
+u8 LOW_DATA(struct instruction *instr)
 {
-	return (uint8_t)((instr -> data) & 0xFF);
+	return (u8)((instr -> data) & 0xFF);
 }
 */
 
-uint8_t LOW_DATA(mem_t *addr)
+//interpret address as low part of data
+u8 LOW_DATA(mem_t *addr)
 {
-	return addr -> lowByte;
+	return *addr;
 }
 
 /*
-uint8_t HIGH_DATA(struct instruction instr)
+u8 HIGH_DATA(struct instruction instr)
 {
-	return (uint8_t)(instr.data >> 8);
+	return (u8)(instr.data >> 8);
 }
 
-uint8_t HIGH_DATA(struct instruction *instr)
+u8 HIGH_DATA(struct instruction *instr)
 {
-	return (uint8_t)((instr -> data) >> 8);
+	return (u8)((instr -> data) >> 8);
 }
 */
 
-uint8_t HIGH_DATA(mem_t *addr)
+//interpret address as high part of data
+u8 HIGH_DATA(mem_t *addr)
 {
-	return addr -> highByte;
+	return *addr;
 }
 
 
@@ -198,7 +207,7 @@ void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
 	current.disp.highDisp = HIGH_DISP(baseAddr + 1);
 	current.data.lowData = LOW_DATA(baseAddr + 2);
 	current.data.highData = HIGH_DATA(baseAddr + 2);
-
+	/*
 	cout<<(unsigned)current.d<<'\n';
 	cout<<(unsigned)current.w<<'\n';
 	cout<<(unsigned)current.mod<<'\n';
@@ -208,6 +217,7 @@ void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
 	cout<<(unsigned)current.disp.highDisp<<'\n';
 	cout<<(unsigned)current.data.lowData<<'\n';
 	cout<<(unsigned)current.data.highData<<'\n';
+	*/
 }
 
 struct instruction& InstructionParser::getCurrentInstr() const
@@ -222,7 +232,7 @@ bool InstructionParser::isRegSource()
 }
 
 /*
-uint8_t InstructionParser::getRegField()
+u8 InstructionParser::getRegField()
 {
 
 	if(!current.w){
@@ -258,7 +268,7 @@ InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *baseA
 	/*mem -> lowByte in switch-statement
 	 is the first mem of instruction
 	 */
-	switch(baseAddr -> lowByte){
+	switch(*baseAddr){
 		case 0x00 ... 0x05:
 			return &Cpu::ADD_GroupHandler; 
 

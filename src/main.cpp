@@ -1,22 +1,23 @@
 #include <instructions.h>
 #include <iostream>
 #include <fstream>
-#include <iomanip>
 #include <cpu.h>
 #include <memory.h>
-#include <typeinfo>
 
 using std::cout;
 
 namespace Emu{
 
-mem_t memory[1<<19];
+mem_t memory[1<<20];
 
 
 } //namespace Emu
 
 
 using namespace Emu;
+
+typedef uint16_t u16;
+typedef uint8_t u8;
 
 
 int main(int argc, char *argv[])
@@ -27,34 +28,25 @@ int main(int argc, char *argv[])
 	int len = inp.tellg();
 	inp.seekg(0, inp.beg);
 	Cpu A(0, 0);
-	memory[0].lowByte = 3;
-	memory[0].highByte = 7;
-	memory[1].lowByte = 78;
-	memory[1].highByte = 32;
-	memory[2].lowByte = 21;
-	memory[2].highByte = 54;
-	A.Parser -> setCurrentInstrFields(memory);
-	mem_t *p = memory;
-	A.regs.ax.ax = 78;
-	A.regs.bx.bx = 78;
-	A.regs.cx.cx = 78;
-	A.regs.dx.dx = 78;
-	A.regs.bp = 78;
-	A.regs.sp = 78;
-	A.regs.si = 78;
-	A.regs.di = 78;
-	
-	uint16_t *ptr = A.getRegister<uint16_t>(REG_FIELD, A.Parser -> getCurrentInstr());
+	A.regs.ax.ax = 15;
+	struct instruction i = {
+		.Opcode = 0,
+		.d = 0,
+		.w = 0,
+		.mod = 0,
+		.reg = 0,
+		.rm = 0,
+		.disp = 0,
+		.data = 0
+	};
+	wreg_t reg = A.getRegister<u16>(0, i);
+	A.dump();
+	*reg = 86;
+	A.dump();
+	//cout<<memory+1<<'\n';
+	//cout<<memory+2<<'\n';
+	//u16 *ptr = A.getRegister<uint16_t>(REG_FIELD, A.Parser -> getCurrentInstr());
 	//какая-то блять хуйня сука!!!
-	cout<<"!!!\n";
-	cout<<*ptr<<'\n';
-	*ptr = 34;
-	cout<<A.regs.ax.ax<<'\n';
-	cout<<*ptr<<'\n';
-	//A.wordRegMap[it -> first] = 98;
-	//A.wordRegMap.at(it -> first) = 65;
-	//cout<<(unsigned)it -> second<<'\n';
-	//cout<<(unsigned)A.regs.ax.ax<<'\n';
 
 	//InstructionGroupHandler_t h = A.Parser -> getGenericGroupHandler(p);
 	//(A.*h)(NULL);
