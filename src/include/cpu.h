@@ -129,6 +129,13 @@ class Cpu{
 	friend class InstructionParser;
 private:
 
+	/*size of current instruction
+	 need for updating IP register
+	 */
+	unsigned ISize;
+	/*byte or word operation*/
+	bool b_op; 
+
 	void ADD_GroupHandler(mem_t *addr);
 	void PUSH_GroupHandler(mem_t *addr);
 	void POP_GroupHandler(mem_t *addr);
@@ -226,12 +233,19 @@ private:
 	u16 RM6_EffAddr(struct instruction& cur);
 	u16 RM7_EffAddr(struct instruction& cur);
 
+	
+
 	u16 getEffectiveAddress(struct instruction& cur);
 	InstructionParser *Parser;
 
 	std::array<EffAddrCalc_t , 8> addrCalculator;
 	std::map <u8, u8 *> byteRegMap;
 	std::map <u8, u16 *> wordRegMap;
+
+	u8 *src8;
+	u8 *dst8;
+	u16 *src16;
+	u16 *dst16;
 
 public:
 	Cpu(u16 startCs , unsigned startIp);
@@ -255,6 +269,9 @@ public:
 
 
 	void dump();
+	InstructionParser *getParser(){
+		return Parser;
+	}
 };
 
 

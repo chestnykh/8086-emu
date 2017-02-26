@@ -81,7 +81,54 @@ void Cpu::segOverridePrefixHandler(mem_t *addr)
 
 void Cpu::ADD_GroupHandler(mem_t *addr)
 {
-	cout<<"Add\n";
+	ISize = 1;
+	Parser -> fillInstruction(addr);
+	struct instruction ICur = Parser -> getCurrentInstr();
+	!ICur.w ? b_op = true : b_op = false;
+	if(b_op){
+		if(!ICur.d)
+			src8 = getRegister<u8>(REG_FIELD, ICur);
+		else
+			dst8 = getRegister<u8>(REG_FIELD, ICur);
+	}
+	else{
+		if(!ICur.d)
+			src16 = getRegister<u16>(REG_FIELD, ICur);
+		else
+			dst16 = getRegister<u16>(REG_FIELD, ICur);
+	}
+	//^
+	//|
+	//|
+	//IBegin();
+	if(ICur.mod == 3){
+		if(b_op){
+			if(!ICur.d)
+				dst8 = getRegister<u8>(RM_FIELD, ICur);
+			else
+				src8 = getRegister<u8>(RM_FIELD, ICur);
+		}
+		else{
+			if(!ICur.d)
+				dst16 = getRegister<u16>(RM_FIELD, ICur);
+			else
+				src16 = getRegister<u16>(RM_FIELD, ICur);
+		}
+		if(b_op){
+			*dst8 += *src8;
+			//flags();
+			return;
+		}
+		*dst16 += *src16;
+		//flags();
+		return;
+	}
+	return;
+	u16 memOperandAddr = getEffectiveAddress(ICur);
+	/*
+	 тут должен точно определяться адрес операнда в memory-массиве. 
+	 как-то с помощью регистра ds или ss или es
+	 */
 	return ;	
 }
 

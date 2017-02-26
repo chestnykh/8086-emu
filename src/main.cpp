@@ -39,10 +39,16 @@ int main(int argc, char *argv[])
 		.disp = 0,
 		.data = 0
 	};
-	wreg_t reg = A.getRegister<u16>(0, i);
-	A.dump();
-	*reg = 86;
-	A.dump();
+	memory[0] = 0x00;
+	memory[1] = 0x01; 
+	memory[2] = 0x02; 
+	memory[3] = 0x03; 
+	memory[4] = 0x04; 
+	memory[5] = 0x05; 
+	InstructionParser *p = A.getParser();
+
+	p -> fillInstruction(memory);
+	p -> dumpInstr();
 	//cout<<memory+1<<'\n';
 	//cout<<memory+2<<'\n';
 	//u16 *ptr = A.getRegister<uint16_t>(REG_FIELD, A.Parser -> getCurrentInstr());

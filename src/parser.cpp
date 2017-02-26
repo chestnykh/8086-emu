@@ -16,10 +16,6 @@ InstructionParser::InstructionParser(mem_t *addr)
 	current = {0,0,0,0,0,0,0,0};
 }
 
-InstructionParser::InstructionParser()
-{
-
-}
 
 InstructionParser::~InstructionParser()
 {
@@ -27,62 +23,17 @@ InstructionParser::~InstructionParser()
 }
 
 
-/*
-u8 OPCODE(struct instruction instr)
-{
-	return instr.one >> 2;
-}
-
-u8 OPCODE(struct instruction *instr)
-{
-	return (instr -> one) >> 2;
-}
-
-
-u8 D(struct instruction instr)
-{
-	return (instr.one >> 1) & 0x01;
-}
-
-
-u8 D(struct instruction *instr)
-{
-	return ((instr -> one) >> 1) & 0x01;
-}
-
-*/
-
 u8 D(mem_t *addr)
 {
 	return ((*addr) >> 1) & 1;
 }
 
-/*
-u8 W(struct instruction instr)
-{
-	return instr.one & 0x01;
-}
-u8 W(struct instruction *instr)
-{
-	return (instr -> one) & 0x01;
-}
-*/
 
 u8 W(mem_t *addr)
 {
 	return (*addr) & 1;
 }
 
-/*
-u8 MOD(struct instruction instr)
-{
-	return instr.two >> 6;
-}
-u8 MOD(struct instruction *instr)
-{
-	return (instr -> two) >> 6;
-}
-*/
 
 u8 MOD(mem_t *addr)
 {
@@ -90,50 +41,16 @@ u8 MOD(mem_t *addr)
 }
 
 
-/*
-u8 REG(struct instruction instr)
-{
-	return (instr.two >> 3) & 0x07;
-}
-u8 REG(struct instruction *instr)
-{
-	return ((instr -> two) >> 3) & 0x07;
-}
-*/
 
 u8 REG(mem_t *addr)
 {
 	return ((*addr) >> 3) & 7;
 }
 
-/*
-u8 RM(struct instruction instr)
-{
-	return instr.two & 0x07;
-}
-u8 RM(struct instruction *instr)
-{
-	return (instr -> two) & 0x07;
-}
-
-*/
 u8 RM(mem_t *addr)
 {
 	return (*addr) & 0x07;
 }
-
-/*
-u8 LOW_DISP(struct instruction instr)
-{
-	return (u8)(instr.disp & 0xFF);
-}
-
-u8 LOW_DISP(struct instruction *instr)
-{
-	return u8((instr -> disp) & 0xFF);
-}
-*/
-
 
 //interpret address as low part of displacement
 u8 LOW_DISP(mem_t *addr)
@@ -141,17 +58,6 @@ u8 LOW_DISP(mem_t *addr)
 	return *addr;
 }
 
-/*
-u8 HIGH_DISP(struct instruction instr)
-{
-	return (u8)(instr.disp >> 8);
-}
-
-u8 HIGH_DISP(struct instruction *instr)
-{
-	return (u8)((instr -> disp) >> 8);
-}
-*/
 
 //interpret address as high part of displacement
 u8 HIGH_DISP(mem_t *addr)
@@ -159,35 +65,11 @@ u8 HIGH_DISP(mem_t *addr)
 	return *addr; 
 }
 
-/*
-u8 LOW_DATA(struct instruction instr)
-{
-	return (u8)(instr.data & 0xFF);
-}
-
-u8 LOW_DATA(struct instruction *instr)
-{
-	return (u8)((instr -> data) & 0xFF);
-}
-*/
-
 //interpret address as low part of data
 u8 LOW_DATA(mem_t *addr)
 {
 	return *addr;
 }
-
-/*
-u8 HIGH_DATA(struct instruction instr)
-{
-	return (u8)(instr.data >> 8);
-}
-
-u8 HIGH_DATA(struct instruction *instr)
-{
-	return (u8)((instr -> data) >> 8);
-}
-*/
 
 //interpret address as high part of data
 u8 HIGH_DATA(mem_t *addr)
@@ -200,14 +82,17 @@ void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
 {
 	current.d = D(baseAddr);
 	current.w = W(baseAddr);
-	current.mod = MOD(baseAddr);
-	current.reg = REG(baseAddr);
-	current.rm = RM(baseAddr);
-	current.disp.lowDisp = LOW_DISP(baseAddr + 1);
-	current.disp.highDisp = HIGH_DISP(baseAddr + 1);
-	current.data.lowData = LOW_DATA(baseAddr + 2);
-	current.data.highData = HIGH_DATA(baseAddr + 2);
-	/*
+	current.mod = MOD(baseAddr+1);
+	current.reg = REG(baseAddr+1);
+	current.rm = RM(baseAddr+1);
+	current.disp.lowDisp = LOW_DISP(baseAddr + 2);
+	current.disp.highDisp = HIGH_DISP(baseAddr + 3);
+	current.data.lowData = LOW_DATA(baseAddr + 4);
+	current.data.highData = HIGH_DATA(baseAddr + 5);
+}
+
+void InstructionParser::dumpInstr()
+{
 	cout<<(unsigned)current.d<<'\n';
 	cout<<(unsigned)current.w<<'\n';
 	cout<<(unsigned)current.mod<<'\n';
@@ -217,12 +102,12 @@ void InstructionParser::setCurrentInstrFields(mem_t *baseAddr)
 	cout<<(unsigned)current.disp.highDisp<<'\n';
 	cout<<(unsigned)current.data.lowData<<'\n';
 	cout<<(unsigned)current.data.highData<<'\n';
-	*/
 }
+
 
 struct instruction& InstructionParser::getCurrentInstr() const
 {
-	return curlink;
+	return link;
 }
 
 
@@ -230,31 +115,6 @@ bool InstructionParser::isRegSource()
 {
 	return !current.d;
 }
-
-/*
-u8 InstructionParser::getRegField()
-{
-
-	if(!current.w){
-		return current.reg == 0 ? AL : 
-		       current.reg == 1 ? CL :
-		       current.reg == 2 ? DL :
-		       current.reg == 3 ? BL :
-		       current.reg == 4 ? AH :
-		       current.reg == 5 ? CH :
-		       current.reg == 6 ? DH :
-		       BH;
-	}
-	return current.reg == 0 ? AX : 
-	       current.reg == 1 ? CX :
-	       current.reg == 2 ? DX :
-	       current.reg == 3 ? BX :
-	       current.reg == 4 ? SP :
-	       current.reg == 5 ? BP :
-	       current.reg == 6 ? SI :
-	       DI;
-}
-*/
 
 bool InstructionParser::regRegCommand()
 {
@@ -515,5 +375,11 @@ InstructionGroupHandler_t InstructionParser::getGenericGroupHandler(mem_t *baseA
 	}
 	return NULL;
 }
+
+void InstructionParser::fillInstruction(mem_t *addr)
+{
+	setCurrentInstrFields(addr);
+}
+
 
 } //namespace Emu
