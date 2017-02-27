@@ -1,6 +1,6 @@
 src/*.out
 src/*.o
-src/emu
+src/emu8086
 src/tests/
 src/trash/
 src/Makefile
