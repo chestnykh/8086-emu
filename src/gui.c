@@ -58,6 +58,7 @@ void dr(GtkWidget *wd, gdouble x, gdouble y){
 		y++;
 		x = tmp_x;
 	}
+	return;
 }	
 
 
